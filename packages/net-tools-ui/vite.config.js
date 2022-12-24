@@ -10,5 +10,15 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
+  },
+  base: '',
+  server: {
+    proxy: {
+      '/init': 'http://localhost:8600',
+      '/socket.io': {
+        target: 'ws://localhost:8600',
+        ws: true,
+      },
+    }
   }
 })
