@@ -1,35 +1,56 @@
-@import './base.css';
-
 #app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-
-  font-weight: normal;
+    margin-top: 20px;
 }
 
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
+.header {
+    margin-bottom: 10px;
 }
 
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
-  }
+.logo {
+    display: inline-block;
+    padding: 5px 15px 8px 15px;
+    font-weight: 300;
+    min-height: 1rem;
+    font-size: 2rem;
+    line-height: 1.28571429em;
+    background: #68b3ed;
+    color: #fff;
+    border-radius: 5px;
+    -webkit-transition: background 400ms ease;
+    -moz-transition: background 400ms ease;
+    -o-transition: background 400ms ease;
+    transition: background 400ms ease;
 }
 
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
+.logo:hover {
+    color: #fff;
+    text-decoration: none;
+    background: #2284d1;
+}
 
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
-  }
+.load-failed:after {
+    border-color: red transparent transparent !important;
+}
+
+.tabs {
+    min-height: 400px;
+}
+
+.hide {
+    display: none !important;
+}
+
+.your-ip {
+    cursor: pointer;
+}
+
+.your-ip:hover {
+    color: #1a69a4;
+}
+
+.ui.input.error input {
+    background-color: #fff6f6 !important;
+    border-color: #e0b4b4 !important;
+    color: #9f3a38 !important;
+    box-shadow: none !important;
 }

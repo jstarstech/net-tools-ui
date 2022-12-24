@@ -9,9 +9,13 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
   },
   "dependencies": {
+    "fomantic-ui-css": "^2.9.0",
+    "jquery": "^3.6.3",
+    "socket.io-client": "^4.5.4",
     "vue": "^3.2.45"
   },
   "devDependencies": {
+    "@rollup/plugin-inject": "^5.0.3",
     "@vitejs/plugin-vue": "^4.0.0",
     "eslint": "^8.22.0",
     "eslint-plugin-vue": "^9.3.0",
