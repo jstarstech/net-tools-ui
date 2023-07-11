@@ -111,7 +111,7 @@ import "fomantic-ui-css/semantic.min.css";
                 <tr v-if="form.address_lookup.data.addresses.length">
                   <td>IP addresses</td>
                   <td>
-                    <span v-for="address in form.address_lookup.data.addresses" class="ipaddr" v-bind:key="address">{{ address }}</span>;
+                    <span v-for="address in form.address_lookup.data.addresses" class="ipaddr" v-bind:key="address">{{ address }}; </span>
                   </td>
                 </tr>
               </table>
