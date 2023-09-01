@@ -808,8 +808,8 @@ export default {
         this.activeTab = val;
       }
     },
-    activeTabUpdate: function () {
-      this.activeTab = "address_lookup";
+    activeTabUpdate: function (tab: string) {
+      this.activeTab = tab;
     },
     getData: function () {
       this.state = "working";
