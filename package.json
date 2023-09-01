@@ -23,10 +23,6 @@
   },
   "description": "This template should help get you started developing with Vue 3 in Vite.",
   "main": "vite.config.js",
-  "repository": {
-    "type": "git",
-    "url": "ssh://git@nas.test:2222/maks/w4net.git"
-  },
   "author": "",
   "license": "ISC"
 }
