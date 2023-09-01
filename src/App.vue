@@ -356,9 +356,10 @@ import "fomantic-ui-css/semantic.min.css";
     </div>
 </template>
 
-<script>
+<script lang="ts">
 import {io} from "socket.io-client";
 import $ from 'jquery';
+
 export default {
   data() {
     return {
