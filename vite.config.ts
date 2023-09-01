@@ -1,31 +1,31 @@
-import { fileURLToPath, URL } from 'node:url'
+import { fileURLToPath, URL } from "node:url";
 
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import inject from '@rollup/plugin-inject';
+import { defineConfig } from "vite";
+import vue from "@vitejs/plugin-vue";
+import inject from "@rollup/plugin-inject";
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     vue(),
     inject({
-      $: 'jquery',
-      jQuery: 'jquery',
+      $: "jquery",
+      jQuery: "jquery",
     }),
   ],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
-    }
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
+    },
   },
-  base: '',
+  base: "",
   server: {
     proxy: {
-      '/init': 'http://localhost:8600',
-      '/socket.io': {
-        target: 'ws://localhost:8600',
+      "/init": "http://localhost:8600",
+      "/socket.io": {
+        target: "ws://localhost:8600",
         ws: true,
       },
-    }
-  }
-})
+    },
+  },
+});
