@@ -1,14 +1,16 @@
 <template>
   <span>
-    <div class="reconnection-info">Complete data may not displayed due to your internet
-      connection issue. Please try again.</div>
-  </span>
+      <div class="reconnection-info">
+        Complete data may not displayed due to your internet connection issue.
+        Please try again.
+      </div>
+    </span>
 </template>
 
 <script lang="ts">
 export default {
-  name: "ConnectionInfo"
-}
+  name: "ConnectionInfo",
+};
 </script>
 
 <style scoped>
