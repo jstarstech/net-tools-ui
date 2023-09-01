@@ -1,5 +1,5 @@
-<script setup>
-import ConnectionInfo from "@/components/ConnectionInfo.vue";
+<script setup lang="ts">
+import ConnectionInfo from "./components/ConnectionInfo.vue"
 import "fomantic-ui-css/semantic.min.js";
 import "fomantic-ui-css/semantic.min.css";
 </script>
