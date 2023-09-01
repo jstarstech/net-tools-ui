@@ -1,11 +1,19 @@
 /* eslint-env node */
 module.exports = {
   root: true,
-  'extends': [
-    'plugin:vue/vue3-essential',
-    'eslint:recommended'
-  ],
+  parser: "vue-eslint-parser",
   parserOptions: {
-    ecmaVersion: 'latest'
-  }
-}
+    parser: "@typescript-eslint/parser",
+  },
+  extends: [
+    "plugin:vue/strongly-recommended",
+    "eslint:recommended",
+    "@vue/typescript/recommended",
+  ],
+  plugins: ["@typescript-eslint", "prettier"],
+  rules: {
+    "prettier/prettier": "error",
+    // not needed for vue 3
+    "vue/no-multiple-template-root": "off",
+  },
+};
