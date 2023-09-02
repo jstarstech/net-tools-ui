@@ -1,221 +1,276 @@
 <script setup lang="ts">
-import 'fomantic-ui-css/semantic.min.css'
-import 'fomantic-ui-css/semantic.min.js'
+import './assets/main.css'
 import ConnectionInfo from './components/ConnectionInfo.vue'
 </script>
 
-<template>
-  <div id="app" class="ui grid container">
-    <div class="row">
-      <div class="column">
-        <div class="ui header">
-          <a class="logo" href="#">NetTools</a>
-        </div>
-        <div class="form">
-          <div class="header">
-            <span class="name" />
-            <span class="desc">Investigate Domain/DNS/IP/Services</span>
-          </div>
-          <div class="ui form">
-            <div class="fields">
-              <div class="six wide field">
-                <div class="ui input" :class="{ error: state === 'input_error' }">
-                  <input id="address_lookup" v-model="form.address_lookup.input" placeholder="URL or IP or Domain"
-                    name="address_lookup" :disabled="state === 'working'" @keyup.enter="getData()" />
-                </div>
-                <br />
-                <small class="your-ip" @click="form.address_lookup.input = remoteAddress">Your IP: {{ remoteAddress }}<i
-                    class="arrow up icon" /></small>
-              </div>
-              <div class="six wide field">
-                <button type="button" :disabled="state === 'working'" class="ui primary button" @click="getData()">
-                  GO
-                </button>
-              </div>
-            </div>
-            <div class="fields inline">
-              <div class="three wide field">
-                <div class="ui checkbox">
-                  <input id="domain_whois" v-model="form.domain_whois.active" :disabled="state === 'working'"
-                    type="checkbox" name="domain_whois" value="true" tabindex="0" class="hidden"
-                    @click="activeTabUpdate('domain_whois')" />
-                  <label for="domain_whois"> Domain whois</label>
-                </div>
-              </div>
-              <div class="two wide field">
-                <div class="ui checkbox">
-                  <input id="dns_records" v-model="form.dns_records.active" :disabled="state === 'working'"
-                    type="checkbox" name="dns_records" value="true" tabindex="0" class="hidden"
-                    @click="activeTabUpdate('dns_records')" />
-                  <label for="dns_records"> DNS records</label>
-                </div>
-              </div>
-              <div class="two wide field">
-                <div class="ui checkbox">
-                  <div class="three wide ficheckbox">
-                    <input id="traceroute" v-model="form.traceroute.active" :disabled="state === 'working'"
-                      type="checkbox" name="traceroute" value="true" tabindex="0" class="hidden"
-                      @click="activeTabUpdate('traceroute')" />
-                    <label for="traceroute"> Traceroute</label>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="fields inline">
-              <div class="three wide field">
-                <div class="ui checkbox">
-                  <input id="network_whois" v-model="form.network_whois.active" class="hidden"
-                    :disabled="state === 'working'" name="network_whois" type="checkbox" value="true" tabindex="0"
-                    @click="activeTabUpdate('network_whois')" />
-                  <label for="network_whois"> Network whois</label>
-                </div>
-              </div>
-              <div class="two wide field">
-                <div class="ui checkbox">
-                  <input id="service_scan" v-model="form.service_scan.active" :disabled="state === 'working'"
-                    name="service_scan" type="checkbox" value="true" tabindex="0" class="hidden"
-                    @click="activeTabUpdate('service_scan')" />
-                  <label for="service_scan"> Service scan</label>
-                </div>
-              </div>
-              <div class="three wide field">
-                <div class="ui checkbox">
-                  <input id="spamdblookup" v-model="form.spamdblookup.active" :disabled="state === 'working'"
-                    name="spamdblookup" type="checkbox" value="true" tabindex="0" class="hidden"
-                    @click="activeTabUpdate('spamdblookup')" />
-                  <label for="spamdblookup"> SpamDB Lookup</label>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="tabs">
-          <div class="ui top attached tabular menu">
-            <a class="item" :class="{ active: activeTab === 'address_lookup' }" data-tab="address_lookup"
-              @click="activeTabSet('address_lookup')">Address
-              <span style="margin-left: 10px" class="ui inline active mini loader" :class="{
-                hide: form.address_lookup.state !== 'working',
-                'load-failed': !connected
-              }" /></a>
-            <a class="item" :class="{
-              active: activeTab === 'domain_whois',
-              hide: !form.domain_whois.active
-            }" data-tab="domain_whois" @click="activeTabSet('domain_whois')">Domain whois
-              <span style="margin-left: 10px" class="ui inline active mini loader" :class="{
-                hide: form.domain_whois.state !== 'working',
-                'load-failed': !connected
-              }" /></a>
-            <a class="item" :class="{
-              active: activeTab === 'network_whois',
-              hide: !form.network_whois.active
-            }" data-tab="network_whois" @click="activeTabSet('network_whois')">Network whois
-              <span style="margin-left: 10px" class="ui inline active mini loader" :class="{
-                hide: form.network_whois.state !== 'working',
-                'load-failed': !connected
-              }" /></a>
-            <a class="item" :class="{
-              active: activeTab === 'dns_records',
-              hide: !form.dns_records.active
-            }" data-tab="dns_records" @click="activeTabSet('dns_records')">DNS records
-              <span style="margin-left: 10px" class="ui inline active mini loader" :class="{
-                hide: form.dns_records.state !== 'working',
-                'load-failed': !connected
-              }" /></a>
-            <a class="item" :class="{
-              active: activeTab === 'traceroute',
-              hide: !form.traceroute.active
-            }" data-tab="traceroute" @click="activeTabSet('traceroute')">Traceroute
-              <span style="margin-left: 10px" class="ui inline active mini loader" :class="{
-                hide: form.traceroute.state !== 'working',
-                'load-failed': !connected
-              }" /></a>
-            <a class="item" :class="{
-              active: activeTab === 'service_scan',
-              hide: !form.service_scan.active
-            }" data-tab="service_scan" @click="activeTabSet('service_scan')">Service scan
-              <span style="margin-left: 10px" class="ui inline active mini loader" :class="{
-                hide: form.service_scan.state !== 'working',
-                'load-failed': !connected
-              }" />
-            </a>
-            <a class="item" :class="{
-              active: activeTab === 'spamdblookup',
-              hide: !form.spamdblookup.active
-            }" data-tab="spamdblookup" @click="activeTabSet('spamdblookup')">SpamDB Lookup
-              <span style="margin-left: 10px" class="ui inline active mini loader" :class="{
-                hide: form.spamdblookup.state !== 'working',
-                'load-failed': !connected
-              }" /></a>
-          </div>
-          <div class="ui bottom attached tab segment content-item" :class="{ active: activeTab === 'address_lookup' }"
-            data-tab="address_lookup">
-            <h3>Address lookup</h3>
+<template id="app">
+  <v-container>
+    <h1 class="text-h2 text-grey-darken-4">NetTools</h1>
+
+    <v-row>
+      <v-col md="6" class="d-flex align-center pb-0">
+        <v-text-field
+          label="URL or IP or Domain"
+          density="compact"
+          hide-details
+          :error="state === 'input_error'"
+          v-model="form.address_lookup.input"
+        />
+        <v-btn
+          class="ma-2"
+          size="large"
+          color="#2185d0"
+          :disabled="state === 'working'"
+          @click="getData()"
+        >
+          GO
+        </v-btn>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col md="6" class="d-flex align-center pt-0">
+        <span
+          class="text-blue-grey-darken-1 your-ip"
+          @click="form.address_lookup.input = remoteAddress"
+        >
+          Your IP: {{ remoteAddress }} <v-icon icon="mdi:mdi-arrow-up" />
+        </span>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col md="6">
+        <v-row>
+          <v-col md="4" class="d-flex align-center pt-0 pb-0">
+            <v-checkbox
+              label="Domain whois"
+              color="blue-grey-darken-1"
+              density="compact"
+              hide-details
+              v-model="form.domain_whois.active"
+              :disabled="state === 'working'"
+              @click="activeTabUpdate('domain_whois')"
+            />
+          </v-col>
+          <v-col md="4" class="d-flex align-center pt-0 pb-0">
+            <v-checkbox
+              label="DNS records"
+              color="blue-grey-darken-1"
+              density="compact"
+              hide-details
+              v-model="form.dns_records.active"
+              :disabled="state === 'working'"
+              @click="activeTabUpdate('dns_records')"
+            />
+          </v-col>
+          <v-col md="4" class="d-flex align-center pt-0 pb-0">
+            <v-checkbox
+              label="Traceroute"
+              color="blue-grey-darken-1"
+              density="compact"
+              hide-details
+              v-model="form.traceroute.active"
+              :disabled="state === 'working'"
+              @click="activeTabUpdate('traceroute')"
+            />
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col md="4" class="d-flex align-center pt-0 pb-0">
+            <v-checkbox
+              label="Network whois"
+              color="blue-grey-darken-1"
+              density="compact"
+              hide-details
+              v-model="form.network_whois.active"
+              :disabled="state === 'working'"
+              @click="activeTabUpdate('network_whois')"
+            ></v-checkbox>
+          </v-col>
+          <v-col md="4" class="d-flex align-center pt-0 pb-0">
+            <v-checkbox
+              label="Service scan"
+              color="blue-grey-darken-1"
+              density="compact"
+              hide-details
+              v-model="form.service_scan.active"
+              :disabled="state === 'working'"
+              @click="activeTabUpdate('service_scan')"
+            ></v-checkbox>
+          </v-col>
+          <v-col md="4" class="d-flex align-center pt-0 pb-0">
+            <v-checkbox
+              label="SpamDB Lookup"
+              color="blue-grey-darken-1"
+              density="compact"
+              hide-details
+              v-model="form.spamdblookup.active"
+              :disabled="state === 'working'"
+              @click="activeTabUpdate('spamdblookup')"
+            ></v-checkbox>
+          </v-col>
+        </v-row>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col md="12">
+        <v-tabs v-model="activeTab" show-arrows class="text-grey-darken-1">
+          <v-tab value="address_lookup">
+            Address
+            <v-progress-circular
+              v-if="!connected && form.address_lookup.state !== 'working'"
+              class="ml-2"
+              size="14"
+              width="1"
+              color="error"
+              indeterminate
+            />
+          </v-tab>
+          <v-tab v-if="form.domain_whois.active" value="domain_whois">
+            Domain whois
+            <v-progress-circular
+              v-if="!connected && form.domain_whois.state !== 'working'"
+              class="ml-2"
+              size="14"
+              width="1"
+              color="error"
+              indeterminate
+            />
+          </v-tab>
+          <v-tab v-if="form.network_whois.active" value="network_whois">
+            Network whois
+            <v-progress-circular
+              v-if="!connected && form.network_whois.state !== 'working'"
+              class="ml-2"
+              size="14"
+              width="1"
+              color="error"
+              indeterminate
+            />
+          </v-tab>
+          <v-tab v-if="form.dns_records.active" value="dns_records">
+            DNS records
+            <v-progress-circular
+              v-if="!connected && form.dns_records.state !== 'working'"
+              class="ml-2"
+              size="14"
+              width="1"
+              color="error"
+              indeterminate
+            />
+          </v-tab>
+          <v-tab v-if="form.traceroute.active" value="traceroute">
+            Traceroute
+            <v-progress-circular
+              v-if="!connected && form.traceroute.state !== 'working'"
+              class="ml-2"
+              size="14"
+              width="1"
+              color="error"
+              indeterminate
+            />
+          </v-tab>
+          <v-tab v-if="form.service_scan.active" value="service_scan">
+            Service scan
+            <v-progress-circular
+              v-if="!connected && form.service_scan.state !== 'working'"
+              class="ml-2"
+              size="14"
+              width="1"
+              color="error"
+              indeterminate
+            />
+          </v-tab>
+          <v-tab v-if="form.spamdblookup.active" value="spamdblookup">
+            SpamDB Lookup
+            <v-progress-circular
+              v-if="!connected && form.spamdblookup.state !== 'working'"
+              class="ml-2"
+              size="14"
+              width="1"
+              color="error"
+              indeterminate
+            />
+          </v-tab>
+        </v-tabs>
+      </v-col>
+      <v-col md="12">
+        <v-window v-model="activeTab" style="min-height: 40vh" class="text-grey-darken-2">
+          <v-window-item value="address_lookup">
+            <h3 class="text-h5">Address lookup</h3>
+            <v-divider class="mb-6" />
             <connection-info v-if="!connected" />
 
-            <table v-if="form.address_lookup.data && form.address_lookup.data.found" class="ui table">
-              <tr v-if="form.address_lookup.data.hostname">
-                <td>Host name</td>
-                <td>
-                  <span class="ipaddr">{{ form.address_lookup.data.hostname }}</span>
-                </td>
-              </tr>
+            <v-table v-if="form.address_lookup.data && form.address_lookup.data.found">
+              <tbody>
+                <tr v-if="form.address_lookup.data.hostname">
+                  <td>Host name</td>
+                  <td>
+                    <span class="ipaddr">{{ form.address_lookup.data.hostname }}</span>
+                  </td>
+                </tr>
 
-              <tr v-if="form.address_lookup.data.domain">
-                <td>Domain name</td>
-                <td>
-                  <span class="ipaddr">{{ form.address_lookup.data.domain }}</span>
-                </td>
-              </tr>
+                <tr v-if="form.address_lookup.data.domain">
+                  <td>Domain name</td>
+                  <td>
+                    <span class="ipaddr">{{ form.address_lookup.data.domain }}</span>
+                  </td>
+                </tr>
 
-              <tr v-if="form.address_lookup.data.ptr_name">
-                <td>PTR domain name (for {{ form.address_lookup.data.ip }})</td>
-                <td>
-                  <span class="ipaddr">{{ form.address_lookup.data.ptr_name }}</span>
-                </td>
-              </tr>
+                <tr v-if="form.address_lookup.data.ptr_name">
+                  <td>PTR domain name (for {{ form.address_lookup.data.ip }})</td>
+                  <td>
+                    <span class="ipaddr">{{ form.address_lookup.data.ptr_name }}</span>
+                  </td>
+                </tr>
 
-              <tr v-if="form.address_lookup.data.cname.length">
-                <td>CNAME</td>
-                <td>
-                  <span v-for="address in form.address_lookup.data.cname" :key="address" class="ipaddr">{{ address
-                  }}</span>;
-                </td>
-              </tr>
+                <tr v-if="form.address_lookup.data.cname.length">
+                  <td>CNAME</td>
+                  <td>
+                    <span
+                      v-for="address in form.address_lookup.data.cname"
+                      :key="address"
+                      class="ipaddr"
+                      >{{ address }}</span
+                    >;
+                  </td>
+                </tr>
 
-              <tr v-if="form.address_lookup.data.addresses.length">
-                <td>IP addresses</td>
-                <td>
-                  <span v-for="address in form.address_lookup.data.addresses" :key="address" class="ipaddr">{{ address }};
-                  </span>
-                </td>
-              </tr>
-            </table>
-          </div>
-          <div class="ui bottom attached tab segment content-item" :class="{
-            active: activeTab === 'domain_whois',
-            hide: !form.domain_whois.active
-          }" data-tab="domain_whois">
-            <h3>Domain Whois record</h3>
+                <tr v-if="form.address_lookup.data.addresses.length">
+                  <td>IP addresses</td>
+                  <td>
+                    <span
+                      v-for="address in form.address_lookup.data.addresses"
+                      :key="address"
+                      class="ipaddr"
+                    >
+                      {{ address }};
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </v-table>
+          </v-window-item>
+
+          <v-window-item value="domain_whois">
+            <h3 class="text-h5">Domain Whois record</h3>
+            <v-divider class="mb-6" />
             <connection-info v-if="!connected" />
             <pre v-if="form.domain_whois.data.data">{{ form.domain_whois.data.data }}</pre>
-          </div>
-          <div class="ui bottom attached tab segment content-item" :class="{
-            active: activeTab === 'network_whois',
-            hide: !form.network_whois.active
-          }" data-tab="network_whois">
-            <h3>Network Whois record</h3>
+          </v-window-item>
+
+          <v-window-item value="network_whois">
+            <h3 class="text-h5">Network Whois record</h3>
+            <v-divider class="mb-6" />
             <connection-info v-if="!connected" />
             <pre v-if="form.network_whois.data.data">{{ form.network_whois.data.data }}</pre>
-          </div>
-          <div class="ui bottom attached tab segment content-item" :class="{
-            active: activeTab === 'dns_records',
-            hide: !form.dns_records.active
-          }" data-tab="dns_records">
-            <h3>DNS records</h3>
+          </v-window-item>
+
+          <v-window-item value="dns_records">
+            <h3 class="text-h5">DNS records</h3>
+            <v-divider class="mb-6" />
             <connection-info v-if="!connected" />
 
-            <table v-if="form.dns_records.data.records && form.dns_records.data.records.length"
-              class="ui celled striped padded table">
+            <v-table v-if="form.dns_records.data.records && form.dns_records.data.records.length">
               <thead>
                 <tr>
                   <th class="six wide">Name</th>
@@ -325,23 +380,24 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
                   </tr>
                 </template>
               </tbody>
-            </table>
-          </div>
-          <div class="ui bottom attached tab segment content-item" :class="{
-            active: activeTab === 'traceroute',
-            hide: !form.traceroute.active
-          }" data-tab="traceroute">
-            <h3>Traceroute</h3>
-            <connection-info v-if="!connected" />
+            </v-table>
+          </v-window-item>
 
+          <v-window-item value="traceroute">
+            <h3 class="text-h5">Traceroute</h3>
+            <v-divider class="mb-6" />
+            <connection-info v-if="!connected" />
             <template v-if="form.traceroute.data.ip">
               <p>
                 Tracing route to
-                <span class="ipaddr">{{ form.traceroute.data.hostname }} [{{ form.traceroute.data.ip }}]</span>...
+                <span class="ipaddr">
+                  {{ form.traceroute.data.hostname }} [{{ form.traceroute.data.ip }}]
+                </span>
+                ...
               </p>
             </template>
 
-            <table class="ui table" :class="{ hide: form.traceroute.hops.length === 0 }">
+            <v-table :class="{ hide: form.traceroute.hops.length === 0 }">
               <thead>
                 <tr>
                   <th>hop</th>
@@ -364,91 +420,100 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
                   <td style="width: 50%">&nbsp;</td>
                 </tr>
               </tbody>
-            </table>
+            </v-table>
 
             <p v-if="form.traceroute.state === 'complete'">Trace complete.</p>
-          </div>
-          <div class="ui bottom attached tab segment content-item" :class="{
-            active: activeTab === 'service_scan',
-            hide: !form.service_scan.active
-          }" data-tab="service_scan">
-            <h3>Service scan</h3>
+          </v-window-item>
+
+          <v-window-item value="service_scan">
+            <h3 class="text-h5">Service scan</h3>
+            <v-divider class="mb-6" />
             <connection-info v-if="!connected" />
 
-            <template v-if="form.service_scan.data.results && form.service_scan.data.results.length">
-              <p v-for="x in form.service_scan.data.results" :key="x.service">
-                <strong style="min-width: 110px; display: inline-block">{{ x.service }}:</strong>
-                <span style="white-space: pre-line; margin-left: 115px; display: block">{{
-                  x.data
-                }}</span>
-              </p>
+            <template
+              v-if="form.service_scan.data.results && form.service_scan.data.results.length"
+            >
+              <v-table density="compact">
+                <tbody>
+                  <tr v-for="x in form.service_scan.data.results" :key="x.service">
+                    <td style="min-width: 160px">{{ x.service }}:</td>
+                    <td>
+                      <span class="response-pre">{{ x.data }}</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </v-table>
             </template>
-          </div>
-          <div class="ui bottom attached tab segment content-item" :class="{
-            active: activeTab === 'spamdblookup',
-            hide: !form.spamdblookup.active
-          }" data-tab="spamdblookup">
-            <h3>Spam Databases Lookup</h3>
+          </v-window-item>
+
+          <v-window-item value="spamdblookup">
+            <h3 class="text-h5">Spam Databases Lookup</h3>
+            <v-divider class="mb-6" />
             <connection-info v-if="!connected" />
 
-            <table v-if="form.spamdblookup.data.results && form.spamdblookup.data.results.length" class="ui table">
-              <tr v-for="item in form.spamdblookup.data.results" :key="item.blacklistInfo.key">
-                <td>
-                  <span v-if="item.listed" style="color: #e80000; font-weight: bold">listed</span>
-                  <span v-else style="color: #00d700">not listed</span>
-                </td>
-                <td>{{ item.address }}</td>
-                <td>
-                  <template v-if="item.blacklistInfo.url">
-                    <a :href="item.blacklistInfo.url" target="_blank">{{
-                      item.blacklistInfo.name
-                    }}</a>
-                  </template>
+            <v-table v-if="form.spamdblookup.data.results && form.spamdblookup.data.results.length">
+              <tbody>
+                <tr v-for="item in form.spamdblookup.data.results" :key="item.blacklistInfo.key">
+                  <td>
+                    <span v-if="item.listed" style="color: #e80000; font-weight: bold">listed</span>
+                    <span v-else style="color: #00d700">not listed</span>
+                  </td>
+                  <td>{{ item.address }}</td>
+                  <td>
+                    <template v-if="item.blacklistInfo.url">
+                      <a :href="item.blacklistInfo.url" target="_blank">{{
+                        item.blacklistInfo.name
+                      }}</a>
+                    </template>
 
-                  <template v-else-if="item.blacklistInfo.name">
-                    {{ item.blacklistInfo.name }}
-                  </template>
+                    <template v-else-if="item.blacklistInfo.name">
+                      {{ item.blacklistInfo.name }}
+                    </template>
 
-                  <template v-else>
-                    {{ item.blacklistInfo.key }}
-                  </template>
-                </td>
-              </tr>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
+                    <template v-else>
+                      {{ item.blacklistInfo.key }}
+                    </template>
+                  </td>
+                </tr>
+              </tbody>
+            </v-table>
+          </v-window-item>
+        </v-window>
 
-    <div class="ui vertical footer segment form-page">
-      <div class="ui container">&copy; 2017 - {{ year }} «<a href="#">NetTools</a>»</div>
-    </div>
+        <v-divider class="mt-6 mb-4"></v-divider>
 
-    <div class="ui modal reconnect">
-      <div class="header">Establishing connection ...</div>
-      <div class="content">
-        <p>&nbsp;</p>
-        <p>
-          We detected a problem with connecting to the server w4net.com. Please wait a few seconds
-          or try
-          <a href="javascript:location.reload();">refreshing</a> the page.
-        </p>
-        <p>&nbsp;</p>
-      </div>
-    </div>
-    <div class="ui modal limit">
-      <div class="header">Limit reached</div>
-      <div class="content">
-        <p />
-        <p>We are so sorry. But today requests limit is reached.</p>
-        <p />
-      </div>
-    </div>
-  </div>
+        <span class="text-grey-darken-2">
+          &copy; 2017 - {{ year }} «<a class="text-blue-grey-darken-1" href="#">NetTools</a>»
+        </span>
+      </v-col>
+    </v-row>
+  </v-container>
+
+  <v-dialog v-model="reconnectDialog" width="auto" max-width="600">
+    <v-card>
+      <v-card-text>
+        We have detected a problem with the connection to the server. Please wait a few seconds or
+        <a class="text-blue-grey-darken-1" href="javascript:location.reload();">refresh</a> the page
+        for a retry.
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn color="primary" block @click="reconnectDialog = false">OK</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+
+  <v-dialog v-model="limitReachedDialog" width="auto" max-width="600">
+    <v-card>
+      <v-card-text>We are so sorry. But today requests limit is reached.</v-card-text>
+      <v-card-actions>
+        <v-btn color="primary" block @click="limitReachedDialog = false">OK</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script lang="ts">
-import $ from 'jquery'
 import { io, Socket } from 'socket.io-client'
 
 type TabState = {
@@ -537,6 +602,8 @@ type NetworkWhois = Omit<TabState, 'data'> & { data: { data: string } }
 type Data = {
   token: string
   year: string
+  reconnectDialog: boolean
+  limitReachedDialog: boolean
   activeTab: string
   state: string
   connected: boolean
@@ -558,6 +625,8 @@ export default {
     return {
       token: '',
       year: '',
+      reconnectDialog: false,
+      limitReachedDialog: false,
       activeTab: 'address_lookup',
       state: 'initial',
       connected: true,
@@ -643,8 +712,7 @@ export default {
       })
 
       this.socket.on('disconnect', () => {
-        $('.ui.modal.reconnect').modal('show')
-
+        this.reconnectDialog = true
         this.connected = false
       })
 
@@ -656,19 +724,19 @@ export default {
           item.state = 'initial'
 
           if (key === 'service_scan') {
-            ; (item as ServiceScanState).data = { results: [] }
+            ;(item as ServiceScanState).data = { results: [] }
           } else if (key === 'spamdblookup') {
-            ; (item as SpamDblookupState).data = { results: [] }
+            ;(item as SpamDblookupState).data = { results: [] }
           } else if (key === 'traceroute') {
-            ; (item as TracerouteState).data = { ip: '', hostname: '' }
-              ; (item as TracerouteState).hops = []
+            ;(item as TracerouteState).data = { ip: '', hostname: '' }
+            ;(item as TracerouteState).hops = []
           }
         }
 
         this.form.service_scan.data.results = []
         this.form.traceroute.hops = []
 
-        $('.ui.modal.reconnect').modal('hide')
+        this.reconnectDialog = false
 
         this.connected = true
       })
@@ -685,7 +753,7 @@ export default {
             this.state = msg.state
 
             if (this.state === 'limit') {
-              $('.ui.modal.limit').modal('show')
+              this.limitReachedDialog = true
 
               for (const [, item] of Object.entries(this.form)) {
                 item.state = 'complete'
@@ -733,7 +801,7 @@ export default {
         item.state = 'initial'
 
         if (key === 'service_scan') {
-          ; (item as ServiceScanState).data.results = []
+          ;(item as ServiceScanState).data.results = []
         }
       }
 

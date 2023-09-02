@@ -1,22 +1,12 @@
 <template>
-  <span>
-      <div class="reconnection-info">
-        Complete data may not displayed due to your internet connection issue.
-        Please try again.
-      </div>
-    </span>
+  <div class="my-6 text-red-darken-2 text-subtitle-2">
+    Due to problems with your internet connection, the full data may not be displayed. Please try
+    again.
+  </div>
 </template>
 
 <script lang="ts">
 export default {
-  name: "ConnectionInfo",
-};
-</script>
-
-<style scoped>
-.reconnection-info {
-  color: red;
-  font-weight: bold;
-  margin: 10px 0 10px 0;
+  name: 'ConnectionInfo'
 }
-</style>
+</script>

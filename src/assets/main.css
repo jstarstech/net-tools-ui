@@ -1,56 +1,21 @@
-#app {
-    margin-top: 20px;
-}
-
-.header {
-    margin-bottom: 10px;
-}
-
-.logo {
-    display: inline-block;
-    padding: 5px 15px 8px 15px;
-    font-weight: 300;
-    min-height: 1rem;
-    font-size: 2rem;
-    line-height: 1.28571429em;
-    background: #68b3ed;
-    color: #fff;
-    border-radius: 5px;
-    -webkit-transition: background 400ms ease;
-    -moz-transition: background 400ms ease;
-    -o-transition: background 400ms ease;
-    transition: background 400ms ease;
-}
-
-.logo:hover {
-    color: #fff;
-    text-decoration: none;
-    background: #2284d1;
-}
-
-.load-failed:after {
-    border-color: red transparent transparent !important;
-}
-
-.tabs {
-    min-height: 400px;
-}
-
-.hide {
-    display: none !important;
-}
-
 .your-ip {
     cursor: pointer;
+    font-size: 11pt;
 }
 
 .your-ip:hover {
-    color: #1a69a4;
+    color: #2185d0!important;
 }
 
-.ui.input.error input {
-    background-color: #fff6f6 !important;
-    border-color: #e0b4b4 !important;
-    color: #9f3a38 !important;
-    box-shadow: none !important;
+.response-pre {
+    display: inline-block;
+    border: 1px dashed rgb(215, 215, 215);
+    padding: 0.5em;
+    font-size: calc(0.6vw + 0.6em);
+    width: 60vw;
+    margin: 0.5em 0;
+    white-space: pre-line;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
 }
