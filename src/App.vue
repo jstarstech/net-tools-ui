@@ -48,7 +48,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
               hide-details
               v-model="form.domain_whois.active"
               :disabled="state === 'working'"
-              @click="activeTabUpdate('domain_whois')"
+              @click="activeTabSet('domain_whois')"
             />
           </v-col>
           <v-col md="4" class="d-flex align-center pt-0 pb-0 px-0 px-sm-3">
@@ -59,7 +59,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
               hide-details
               v-model="form.dns_records.active"
               :disabled="state === 'working'"
-              @click="activeTabUpdate('dns_records')"
+              @click="activeTabSet('dns_records')"
             />
           </v-col>
           <v-col md="4" class="d-flex align-center pt-0 pb-0 px-0 px-sm-3">
@@ -70,7 +70,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
               hide-details
               v-model="form.traceroute.active"
               :disabled="state === 'working'"
-              @click="activeTabUpdate('traceroute')"
+              @click="activeTabSet('traceroute')"
             />
           </v-col>
         </v-row>
@@ -83,7 +83,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
               hide-details
               v-model="form.network_whois.active"
               :disabled="state === 'working'"
-              @click="activeTabUpdate('network_whois')"
+              @click="activeTabSet('network_whois')"
             ></v-checkbox>
           </v-col>
           <v-col md="4" class="d-flex align-center pt-0 pb-0 px-0 px-sm-3">
@@ -94,7 +94,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
               hide-details
               v-model="form.service_scan.active"
               :disabled="state === 'working'"
-              @click="activeTabUpdate('service_scan')"
+              @click="activeTabSet('service_scan')"
             ></v-checkbox>
           </v-col>
           <v-col md="4" class="d-flex align-center pt-0 pb-0 px-0 px-sm-3">
@@ -105,7 +105,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
               hide-details
               v-model="form.spamdblookup.active"
               :disabled="state === 'working'"
-              @click="activeTabUpdate('spamdblookup')"
+              @click="activeTabSet('spamdblookup')"
             ></v-checkbox>
           </v-col>
         </v-row>
@@ -784,15 +784,10 @@ export default {
         }
       )
     },
-    activeTabSet: function (val: string) {
-      if (this.activeTab === val) {
+    activeTabSet: function (tab: string) {
+      if (this.activeTab === tab) {
         this.activeTab = 'address_lookup'
-      } else {
-        this.activeTab = val
       }
-    },
-    activeTabUpdate: function (tab: string) {
-      this.activeTab = tab
     },
     getData: function () {
       this.state = 'working'
