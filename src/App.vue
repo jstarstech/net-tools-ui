@@ -8,7 +8,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
     <h1 class="text-h2 text-grey-darken-4">NetTools</h1>
 
     <v-row>
-      <v-col md="6" class="d-flex align-center pb-0">
+      <v-col sm="10" md="8" lg="6" class="d-flex align-center pb-0">
         <v-text-field
           label="URL or IP or Domain"
           density="compact"
@@ -28,7 +28,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
       </v-col>
     </v-row>
     <v-row>
-      <v-col md="6" class="d-flex align-center pt-0">
+      <v-col sm="10" md="8" lg="6" class="d-flex align-center pt-0">
         <span
           class="text-blue-grey-darken-1 your-ip"
           @click="form.address_lookup.input = remoteAddress"
@@ -38,9 +38,9 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
       </v-col>
     </v-row>
     <v-row>
-      <v-col md="6">
+      <v-col xs="12" sm="10" md="8" lg="6">
         <v-row>
-          <v-col md="4" class="d-flex align-center pt-0 pb-0">
+          <v-col md="4" class="d-flex align-center pt-0 pb-0 px-0 px-sm-3">
             <v-checkbox
               label="Domain whois"
               color="blue-grey-darken-1"
@@ -51,7 +51,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
               @click="activeTabUpdate('domain_whois')"
             />
           </v-col>
-          <v-col md="4" class="d-flex align-center pt-0 pb-0">
+          <v-col md="4" class="d-flex align-center pt-0 pb-0 px-0 px-sm-3">
             <v-checkbox
               label="DNS records"
               color="blue-grey-darken-1"
@@ -62,7 +62,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
               @click="activeTabUpdate('dns_records')"
             />
           </v-col>
-          <v-col md="4" class="d-flex align-center pt-0 pb-0">
+          <v-col md="4" class="d-flex align-center pt-0 pb-0 px-0 px-sm-3">
             <v-checkbox
               label="Traceroute"
               color="blue-grey-darken-1"
@@ -75,7 +75,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
           </v-col>
         </v-row>
         <v-row>
-          <v-col md="4" class="d-flex align-center pt-0 pb-0">
+          <v-col md="4" class="d-flex align-center pt-0 pb-0 px-0 px-sm-3">
             <v-checkbox
               label="Network whois"
               color="blue-grey-darken-1"
@@ -86,7 +86,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
               @click="activeTabUpdate('network_whois')"
             ></v-checkbox>
           </v-col>
-          <v-col md="4" class="d-flex align-center pt-0 pb-0">
+          <v-col md="4" class="d-flex align-center pt-0 pb-0 px-0 px-sm-3">
             <v-checkbox
               label="Service scan"
               color="blue-grey-darken-1"
@@ -97,7 +97,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
               @click="activeTabUpdate('service_scan')"
             ></v-checkbox>
           </v-col>
-          <v-col md="4" class="d-flex align-center pt-0 pb-0">
+          <v-col md="4" class="d-flex align-center pt-0 pb-0 px-0 px-sm-3">
             <v-checkbox
               label="SpamDB Lookup"
               color="blue-grey-darken-1"
