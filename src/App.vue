@@ -327,16 +327,8 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
                     <td>{{ x.name }}</td>
                     <td>{{ x.RRType }}</td>
                     <td>
-                      <div class="ui celled list">
-                        <div class="item">
-                          <i class="caret right icon" />
-                          <div class="content">exchange: {{ x.exchange }}</div>
-                        </div>
-                        <div class="item">
-                          <i class="caret right icon" />
-                          <div class="content">priority: {{ x.priority }}</div>
-                        </div>
-                      </div>
+                      <div><v-icon icon="mdi:mdi-menu-right" /> exchange: {{ x.exchange }}</div>
+                      <div><v-icon icon="mdi:mdi-menu-right" /> priority: {{ x.priority }}</div>
                     </td>
                     <td>{{ x.ttl }}s</td>
                   </tr>
@@ -345,36 +337,21 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
                     <td>{{ x.name }}</td>
                     <td>SOA</td>
                     <td>
-                      <div class="ui celled list">
-                        <div class="item">
-                          <i class="caret right icon" />
-                          <div class="content">primary: {{ x.primary }}</div>
-                        </div>
-                        <div class="item">
-                          <i class="caret right icon" />
-                          <div class="content">serial: {{ x.serial }}</div>
-                        </div>
-                        <div class="item">
-                          <i class="caret right icon" />
-                          <div class="content">admin: {{ x.admin }}</div>
-                        </div>
-                        <div class="item">
-                          <i class="caret right icon" />
-                          <div class="content">refresh: {{ x.refresh }}</div>
-                        </div>
-                        <div class="item">
-                          <i class="caret righ t icon" />
-                          <div class="content">retry: {{ x.retry }}</div>
-                        </div>
-                        <div class="item">
-                          <i class="caret right icon" />
-                          <div class="content">expiration: {{ x.expiration }}</div>
-                        </div>
-                        <div class="item">
-                          <i class="caret right icon" />
-                          <div class="content">minimum: {{ x.minimum }}</div>
-                        </div>
-                      </div>
+                      <div><v-icon icon="mdi:mdi-menu-right" /> exchange: {{ x.primary }}</div>
+                      <v-divider />
+                      <div><v-icon icon="mdi:mdi-menu-right" /> primary: {{ x.primary }}</div>
+                      <v-divider />
+                      <div><v-icon icon="mdi:mdi-menu-right" /> serial: {{ x.serial }}</div>
+                      <v-divider />
+                      <div><v-icon icon="mdi:mdi-menu-right" /> admin: {{ x.admin }}</div>
+                      <v-divider />
+                      <div><v-icon icon="mdi:mdi-menu-right" /> refresh: {{ x.refresh }}</div>
+                      <v-divider />
+                      <div><v-icon icon="mdi:mdi-menu-right" /> retry: {{ x.retry }}</div>
+                      <v-divider />
+                      <div><v-icon icon="mdi:mdi-menu-right" /> expiration: {{ x.expiration }}</div>
+                      <v-divider />
+                      <div><v-icon icon="mdi:mdi-menu-right" /> minimum: {{ x.minimum }}</div>
                     </td>
                     <td>{{ x.ttl }}s</td>
                   </tr>
