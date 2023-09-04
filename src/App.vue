@@ -777,6 +777,7 @@ export default {
                 this.form[msg.type].data.results.push(msg.data as ServiceScan)
               }
 
+              this.form[msg.type].state = msg.state
               break
             case 'traceroute_hop': {
               if (msg.state === 'working' && msg.hop) {
@@ -784,6 +785,10 @@ export default {
               }
 
               this.form['traceroute'].state = msg.state
+              break
+            }
+            case 'traceroute': {
+              this.form[msg.type].state = msg.state
               break
             }
             case 'address_lookup': {
