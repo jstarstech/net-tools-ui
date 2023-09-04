@@ -455,15 +455,21 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
               <tbody>
                 <tr v-for="item in form.spamdblookup.data.results" :key="item.blacklistInfo.key">
                   <td>
-                    <span v-if="item.listed" style="color: #e80000; font-weight: bold">listed</span>
-                    <span v-else style="color: #00d700">not listed</span>
+                    <span v-if="item.listed" class="text-red-lighten-1 font-weight-medium">
+                      listed
+                    </span>
+                    <span v-else class="text-light-green-accent-4"> not listed </span>
                   </td>
                   <td>{{ item.address }}</td>
                   <td>
                     <template v-if="item.blacklistInfo.url">
-                      <a :href="item.blacklistInfo.url" target="_blank">{{
-                        item.blacklistInfo.name
-                      }}</a>
+                      <a
+                        :href="item.blacklistInfo.url"
+                        class="text-blue-grey-darken-1"
+                        target="_blank"
+                      >
+                        {{ item.blacklistInfo.name }}
+                      </a>
                     </template>
 
                     <template v-else-if="item.blacklistInfo.name">
