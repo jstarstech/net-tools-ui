@@ -746,40 +746,86 @@ export default {
         (msg: {
           type: string
           state: string
-          data: AddressLookupData | ServiceScan | DnsRecord[]
+          data:
+            | AddressLookupData
+            | ServiceScan
+            | { records: DnsRecord[] }
+            | { results: SpamDblookup[] }
+            | { data: string }
           hop?: TracerouteHop
         }): void => {
-          if (msg.type === 'complete') {
-            this.state = msg.state
+          switch (msg.type) {
+            case 'complete':
+              this.state = msg.state
 
-            if (this.state === 'limit') {
-              this.limitReachedDialog = true
+              if (this.state === 'limit') {
+                this.limitReachedDialog = true
 
-              for (const [, item] of Object.entries(this.form)) {
-                item.state = 'complete'
+                for (const [, item] of Object.entries(this.form)) {
+                  item.state = 'complete'
+                }
               }
-            }
 
-            if (this.state === 'input_error') {
-              for (const [, item] of Object.entries(this.form)) {
-                item.state = 'complete'
+              if (this.state === 'input_error') {
+                for (const [, item] of Object.entries(this.form)) {
+                  item.state = 'complete'
+                }
               }
-            }
-          }
+              break
+            case 'service_scan':
+              if (msg.state === 'working') {
+                this.form[msg.type].data.results.push(msg.data as ServiceScan)
+              }
 
-          if (msg.type === 'traceroute_hop' && msg.state === 'working' && msg.hop) {
-            this.form['traceroute'].hops.push(msg.hop)
-          } else if (msg.type === 'service_scan' && msg.state === 'working') {
-            this.form[msg.type].data.results.push(msg.data as ServiceScan)
-            this.form[msg.type].state = msg.state
-          } else if (msg.type === 'service_scan' && msg.state === 'complete') {
-            this.form[msg.type].state = msg.state
-          } else if (msg.type === 'address_lookup' && msg.state === 'complete') {
-            this.form[msg.type].state = msg.state
-            this.form[msg.type].data = msg.data as AddressLookupData
-          } else if (msg.type === 'dns_records' && msg.state === 'complete') {
-            this.form[msg.type].state = msg.state
-            this.form[msg.type].data.records = msg.data as DnsRecord[]
+              break
+            case 'traceroute_hop': {
+              if (msg.state === 'working' && msg.hop) {
+                this.form['traceroute'].hops.push(msg.hop)
+              }
+
+              this.form['traceroute'].state = msg.state
+              break
+            }
+            case 'address_lookup': {
+              if (msg.state === 'complete') {
+                this.form[msg.type].data = msg.data as AddressLookupData
+              }
+
+              this.form[msg.type].state = msg.state
+              break
+            }
+            case 'domain_whois': {
+              if (msg.state === 'complete') {
+                this.form[msg.type].data = msg.data as { data: string }
+              }
+
+              this.form[msg.type].state = msg.state
+              break
+            }
+            case 'network_whois': {
+              if (msg.state === 'complete') {
+                this.form[msg.type].data = msg.data as { data: string }
+              }
+
+              this.form[msg.type].state = msg.state
+              break
+            }
+            case 'dns_records': {
+              if (msg.state === 'complete') {
+                this.form[msg.type].data.records = (msg.data as { records: DnsRecord[] }).records
+              }
+
+              this.form[msg.type].state = msg.state
+              break
+            }
+            case 'spamdblookup': {
+              if (msg.state === 'complete') {
+                this.form[msg.type].data.results = (msg.data as { results: SpamDblookup[] }).results
+              }
+
+              this.form[msg.type].state = msg.state
+              break
+            }
           }
         }
       )
