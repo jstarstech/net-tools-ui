@@ -117,77 +117,77 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
           <v-tab value="address_lookup">
             Address
             <v-progress-circular
-              v-if="!connected && form.address_lookup.state !== 'working'"
+              v-if="!connected || form.address_lookup.state === 'working'"
               class="ml-2"
               size="14"
               width="1"
-              color="error"
+              :color="!connected ? 'error' : ''"
               indeterminate
             />
           </v-tab>
           <v-tab v-if="form.domain_whois.active" value="domain_whois">
             Domain whois
             <v-progress-circular
-              v-if="!connected && form.domain_whois.state !== 'working'"
+              v-if="!connected || form.domain_whois.state === 'working'"
               class="ml-2"
               size="14"
               width="1"
-              color="error"
+              :color="!connected ? 'error' : ''"
               indeterminate
             />
           </v-tab>
           <v-tab v-if="form.network_whois.active" value="network_whois">
             Network whois
             <v-progress-circular
-              v-if="!connected && form.network_whois.state !== 'working'"
+              v-if="!connected || form.network_whois.state === 'working'"
               class="ml-2"
               size="14"
               width="1"
-              color="error"
+              :color="!connected ? 'error' : ''"
               indeterminate
             />
           </v-tab>
           <v-tab v-if="form.dns_records.active" value="dns_records">
             DNS records
             <v-progress-circular
-              v-if="!connected && form.dns_records.state !== 'working'"
+              v-if="!connected || form.dns_records.state === 'working'"
               class="ml-2"
               size="14"
               width="1"
-              color="error"
+              :color="!connected ? 'error' : ''"
               indeterminate
             />
           </v-tab>
           <v-tab v-if="form.traceroute.active" value="traceroute">
             Traceroute
             <v-progress-circular
-              v-if="!connected && form.traceroute.state !== 'working'"
+              v-if="!connected || form.traceroute.state === 'working'"
               class="ml-2"
               size="14"
               width="1"
-              color="error"
+              :color="!connected ? 'error' : ''"
               indeterminate
             />
           </v-tab>
           <v-tab v-if="form.service_scan.active" value="service_scan">
             Service scan
             <v-progress-circular
-              v-if="!connected && form.service_scan.state !== 'working'"
+              v-if="!connected || form.service_scan.state === 'working'"
               class="ml-2"
               size="14"
               width="1"
-              color="error"
+              :color="!connected ? 'error' : ''"
               indeterminate
             />
           </v-tab>
           <v-tab v-if="form.spamdblookup.active" value="spamdblookup">
             SpamDB Lookup
             <v-progress-circular
-              v-if="!connected && form.spamdblookup.state !== 'working'"
+              v-if="!connected || form.spamdblookup.state === 'working'"
               class="ml-2"
               size="14"
               width="1"
-              color="error"
+              :color="!connected ? 'error' : ''"
               indeterminate
             />
           </v-tab>
