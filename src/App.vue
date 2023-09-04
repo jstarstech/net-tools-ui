@@ -843,35 +843,14 @@ export default {
     getData: function () {
       this.state = 'working'
 
-      for (const [key, item] of Object.entries(this.form)) {
-        item.state = 'initial'
-
-        if (key === 'service_scan') {
-          ;(item as ServiceScanState).data.results = []
+      for (const [, item] of Object.entries(this.form)) {
+        if (item.active) {
+          item.state = 'working'
         }
       }
 
       this.form.service_scan.data.results = []
       this.form.traceroute.hops = []
-
-      if (this.form.domain_whois.active === true) {
-        this.form.address_lookup.state = 'working'
-      }
-      if (this.form.dns_records.active === true) {
-        this.form.dns_records.state = 'working'
-      }
-      if (this.form.network_whois.active === true) {
-        this.form.network_whois.state = 'working'
-      }
-      if (this.form.traceroute.active === true) {
-        this.form.traceroute.state = 'working'
-      }
-      if (this.form.service_scan.active === true) {
-        this.form.service_scan.state = 'working'
-      }
-      if (this.form.spamdblookup.active === true) {
-        this.form.spamdblookup.state = 'working'
-      }
 
       const message = {
         address_lookup: this.form.address_lookup.input,
