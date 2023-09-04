@@ -272,13 +272,14 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
 
             <v-table
               v-if="service.dns_records.data.records && service.dns_records.data.records.length"
+              class="dnsRecordsTable"
             >
               <thead>
                 <tr>
-                  <th class="six wide">Name</th>
-                  <th class="one wide">Type</th>
-                  <th class="six wide">Value</th>
-                  <th class="two wide">TTL</th>
+                  <th>Name</th>
+                  <th>Type</th>
+                  <th>Value</th>
+                  <th>TTL</th>
                 </tr>
               </thead>
               <tbody>
@@ -855,3 +856,11 @@ export default {
   }
 }
 </script>
+
+<style>
+.dnsRecordsTable th td:first-child,
+.dnsRecordsTable tr td:first-child {
+  max-width: 200px;
+  word-wrap: break-word;
+}
+</style>
