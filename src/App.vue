@@ -552,6 +552,7 @@ type DnsRecordsState = Omit<TabState, 'data'> & {
     records: DnsRecord[]
   }
 }
+
 type SpamDblookup = {
   listed: string
   address: string
@@ -580,6 +581,7 @@ type AddressLookupState = Omit<TabState, 'data'> & {
   input: string
   data: AddressLookupData
 }
+
 type NetworkWhois = Omit<TabState, 'data'> & { data: { data: string } }
 
 type Data = {
@@ -607,6 +609,7 @@ export default {
   data(): Data {
     return {
       token: '',
+      socket: io(),
       year: '',
       reconnectDialog: false,
       limitReachedDialog: false,
@@ -668,8 +671,7 @@ export default {
           state: 'initial',
           data: { results: [] }
         }
-      },
-      socket: io()
+      }
     }
   },
   mounted() {
@@ -701,27 +703,10 @@ export default {
 
       this.socket.on('reconnect', () => {
         this.socket.sendBuffer = []
-        this.state = 'initial'
-
-        for (const [key, item] of Object.entries(this.form)) {
-          item.state = 'initial'
-
-          if (key === 'service_scan') {
-            ;(item as ServiceScanState).data = { results: [] }
-          } else if (key === 'spamdblookup') {
-            ;(item as SpamDblookupState).data = { results: [] }
-          } else if (key === 'traceroute') {
-            ;(item as TracerouteState).data = { ip: '', hostname: '' }
-            ;(item as TracerouteState).hops = []
-          }
-        }
-
-        this.form.service_scan.data.results = []
-        this.form.traceroute.hops = []
-
+        this.connected = true
         this.reconnectDialog = false
 
-        this.connected = true
+        this.resetServiceData('initial')
       })
 
       this.socket.on(
@@ -818,22 +803,36 @@ export default {
         }
       )
     },
+    resetServiceData(state: string = 'initial') {
+      this.state = state
+
+      for (const [, item] of Object.entries(this.form)) {
+        item.state = state
+      }
+
+      this.form.address_lookup.data = {
+        domain: '',
+        hostname: '',
+        cname: '',
+        ptr_name: '',
+        ip: '',
+        found: '',
+        addresses: []
+      }
+      this.form.domain_whois.data = { data: '' }
+      this.form.network_whois.data = { data: '' }
+      this.form.traceroute.data = { ip: '', hostname: '' }
+      this.form.traceroute.hops = []
+      this.form.service_scan.data.results = []
+      this.form.spamdblookup.data = { results: [] }
+    },
     activeTabSet: function (tab: string) {
       if (this.activeTab === tab) {
         this.activeTab = 'address_lookup'
       }
     },
     getData: function () {
-      this.state = 'working'
-
-      for (const [, item] of Object.entries(this.form)) {
-        if (item.active) {
-          item.state = 'working'
-        }
-      }
-
-      this.form.service_scan.data.results = []
-      this.form.traceroute.hops = []
+      this.resetServiceData('working')
 
       const message = {
         address_lookup: this.form.address_lookup.input,
