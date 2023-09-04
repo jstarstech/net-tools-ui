@@ -14,7 +14,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
           density="compact"
           hide-details
           :error="state === 'input_error'"
-          v-model="form.address_lookup.input"
+          v-model="service.address_lookup.input"
         />
         <v-btn
           class="ma-2"
@@ -31,7 +31,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
       <v-col sm="10" md="8" lg="6" class="d-flex align-center pt-0">
         <span
           class="text-blue-grey-darken-1 your-ip"
-          @click="form.address_lookup.input = remoteAddress"
+          @click="service.address_lookup.input = remoteAddress"
         >
           Your IP: {{ remoteAddress }} <v-icon icon="mdi:mdi-arrow-up" />
         </span>
@@ -46,7 +46,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
               color="blue-grey-darken-1"
               density="compact"
               hide-details
-              v-model="form.domain_whois.active"
+              v-model="service.domain_whois.active"
               :disabled="state === 'working'"
               @click="activeTabSet('domain_whois')"
             />
@@ -57,7 +57,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
               color="blue-grey-darken-1"
               density="compact"
               hide-details
-              v-model="form.dns_records.active"
+              v-model="service.dns_records.active"
               :disabled="state === 'working'"
               @click="activeTabSet('dns_records')"
             />
@@ -68,7 +68,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
               color="blue-grey-darken-1"
               density="compact"
               hide-details
-              v-model="form.traceroute.active"
+              v-model="service.traceroute.active"
               :disabled="state === 'working'"
               @click="activeTabSet('traceroute')"
             />
@@ -81,7 +81,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
               color="blue-grey-darken-1"
               density="compact"
               hide-details
-              v-model="form.network_whois.active"
+              v-model="service.network_whois.active"
               :disabled="state === 'working'"
               @click="activeTabSet('network_whois')"
             ></v-checkbox>
@@ -92,7 +92,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
               color="blue-grey-darken-1"
               density="compact"
               hide-details
-              v-model="form.service_scan.active"
+              v-model="service.service_scan.active"
               :disabled="state === 'working'"
               @click="activeTabSet('service_scan')"
             ></v-checkbox>
@@ -103,7 +103,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
               color="blue-grey-darken-1"
               density="compact"
               hide-details
-              v-model="form.spamdblookup.active"
+              v-model="service.spamdblookup.active"
               :disabled="state === 'working'"
               @click="activeTabSet('spamdblookup')"
             ></v-checkbox>
@@ -117,7 +117,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
           <v-tab value="address_lookup">
             Address
             <v-progress-circular
-              v-if="!connected || form.address_lookup.state === 'working'"
+              v-if="!connected || service.address_lookup.state === 'working'"
               class="ml-2"
               size="14"
               width="1"
@@ -125,10 +125,10 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
               indeterminate
             />
           </v-tab>
-          <v-tab v-if="form.domain_whois.active" value="domain_whois">
+          <v-tab v-if="service.domain_whois.active" value="domain_whois">
             Domain whois
             <v-progress-circular
-              v-if="!connected || form.domain_whois.state === 'working'"
+              v-if="!connected || service.domain_whois.state === 'working'"
               class="ml-2"
               size="14"
               width="1"
@@ -136,10 +136,10 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
               indeterminate
             />
           </v-tab>
-          <v-tab v-if="form.network_whois.active" value="network_whois">
+          <v-tab v-if="service.network_whois.active" value="network_whois">
             Network whois
             <v-progress-circular
-              v-if="!connected || form.network_whois.state === 'working'"
+              v-if="!connected || service.network_whois.state === 'working'"
               class="ml-2"
               size="14"
               width="1"
@@ -147,10 +147,10 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
               indeterminate
             />
           </v-tab>
-          <v-tab v-if="form.dns_records.active" value="dns_records">
+          <v-tab v-if="service.dns_records.active" value="dns_records">
             DNS records
             <v-progress-circular
-              v-if="!connected || form.dns_records.state === 'working'"
+              v-if="!connected || service.dns_records.state === 'working'"
               class="ml-2"
               size="14"
               width="1"
@@ -158,10 +158,10 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
               indeterminate
             />
           </v-tab>
-          <v-tab v-if="form.traceroute.active" value="traceroute">
+          <v-tab v-if="service.traceroute.active" value="traceroute">
             Traceroute
             <v-progress-circular
-              v-if="!connected || form.traceroute.state === 'working'"
+              v-if="!connected || service.traceroute.state === 'working'"
               class="ml-2"
               size="14"
               width="1"
@@ -169,10 +169,10 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
               indeterminate
             />
           </v-tab>
-          <v-tab v-if="form.service_scan.active" value="service_scan">
+          <v-tab v-if="service.service_scan.active" value="service_scan">
             Service scan
             <v-progress-circular
-              v-if="!connected || form.service_scan.state === 'working'"
+              v-if="!connected || service.service_scan.state === 'working'"
               class="ml-2"
               size="14"
               width="1"
@@ -180,10 +180,10 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
               indeterminate
             />
           </v-tab>
-          <v-tab v-if="form.spamdblookup.active" value="spamdblookup">
+          <v-tab v-if="service.spamdblookup.active" value="spamdblookup">
             SpamDB Lookup
             <v-progress-circular
-              v-if="!connected || form.spamdblookup.state === 'working'"
+              v-if="!connected || service.spamdblookup.state === 'working'"
               class="ml-2"
               size="14"
               width="1"
@@ -200,34 +200,34 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
             <v-divider class="mb-6" />
             <connection-info v-if="!connected" />
 
-            <v-table v-if="form.address_lookup.data && form.address_lookup.data.found">
+            <v-table v-if="service.address_lookup.data && service.address_lookup.data.found">
               <tbody>
-                <tr v-if="form.address_lookup.data.hostname">
+                <tr v-if="service.address_lookup.data.hostname">
                   <td>Host name</td>
                   <td>
-                    <span class="ipaddr">{{ form.address_lookup.data.hostname }}</span>
+                    <span class="ipaddr">{{ service.address_lookup.data.hostname }}</span>
                   </td>
                 </tr>
 
-                <tr v-if="form.address_lookup.data.domain">
+                <tr v-if="service.address_lookup.data.domain">
                   <td>Domain name</td>
                   <td>
-                    <span class="ipaddr">{{ form.address_lookup.data.domain }}</span>
+                    <span class="ipaddr">{{ service.address_lookup.data.domain }}</span>
                   </td>
                 </tr>
 
-                <tr v-if="form.address_lookup.data.ptr_name">
-                  <td>PTR domain name (for {{ form.address_lookup.data.ip }})</td>
+                <tr v-if="service.address_lookup.data.ptr_name">
+                  <td>PTR domain name (for {{ service.address_lookup.data.ip }})</td>
                   <td>
-                    <span class="ipaddr">{{ form.address_lookup.data.ptr_name }}</span>
+                    <span class="ipaddr">{{ service.address_lookup.data.ptr_name }}</span>
                   </td>
                 </tr>
 
-                <tr v-if="form.address_lookup.data.cname.length">
+                <tr v-if="service.address_lookup.data.cname.length">
                   <td>CNAME</td>
                   <td>
                     <span
-                      v-for="address in form.address_lookup.data.cname"
+                      v-for="address in service.address_lookup.data.cname"
                       :key="address"
                       class="ipaddr"
                       >{{ address }}</span
@@ -235,11 +235,11 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
                   </td>
                 </tr>
 
-                <tr v-if="form.address_lookup.data.addresses.length">
+                <tr v-if="service.address_lookup.data.addresses.length">
                   <td>IP addresses</td>
                   <td>
                     <span
-                      v-for="address in form.address_lookup.data.addresses"
+                      v-for="address in service.address_lookup.data.addresses"
                       :key="address"
                       class="ipaddr"
                     >
@@ -255,14 +255,14 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
             <h3 class="text-h5">Domain Whois record</h3>
             <v-divider class="mb-6" />
             <connection-info v-if="!connected" />
-            <pre v-if="form.domain_whois.data.data">{{ form.domain_whois.data.data }}</pre>
+            <pre v-if="service.domain_whois.data.data">{{ service.domain_whois.data.data }}</pre>
           </v-window-item>
 
           <v-window-item value="network_whois">
             <h3 class="text-h5">Network Whois record</h3>
             <v-divider class="mb-6" />
             <connection-info v-if="!connected" />
-            <pre v-if="form.network_whois.data.data">{{ form.network_whois.data.data }}</pre>
+            <pre v-if="service.network_whois.data.data">{{ service.network_whois.data.data }}</pre>
           </v-window-item>
 
           <v-window-item value="dns_records">
@@ -270,7 +270,9 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
             <v-divider class="mb-6" />
             <connection-info v-if="!connected" />
 
-            <v-table v-if="form.dns_records.data.records && form.dns_records.data.records.length">
+            <v-table
+              v-if="service.dns_records.data.records && service.dns_records.data.records.length"
+            >
               <thead>
                 <tr>
                   <th class="six wide">Name</th>
@@ -280,7 +282,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
                 </tr>
               </thead>
               <tbody>
-                <template v-for="x in form.dns_records.data.records" :key="x.name">
+                <template v-for="x in service.dns_records.data.records" :key="x.name">
                   <tr v-if="x.RRType === 'AAAA'">
                     <td>{{ x.name }}</td>
                     <td>{{ x.RRType }}</td>
@@ -364,17 +366,17 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
             <h3 class="text-h5">Traceroute</h3>
             <v-divider class="mb-6" />
             <connection-info v-if="!connected" />
-            <template v-if="form.traceroute.data.ip">
+            <template v-if="service.traceroute.data.ip">
               <p>
                 Tracing route to
                 <span class="ipaddr">
-                  {{ form.traceroute.data.hostname }} [{{ form.traceroute.data.ip }}]
+                  {{ service.traceroute.data.hostname }} [{{ service.traceroute.data.ip }}]
                 </span>
                 ...
               </p>
             </template>
 
-            <v-table :class="{ hide: form.traceroute.hops.length === 0 }">
+            <v-table :class="{ hide: service.traceroute.hops.length === 0 }">
               <thead>
                 <tr>
                   <th>hop</th>
@@ -384,7 +386,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="hop in form.traceroute.hops" :key="hop.hop">
+                <tr v-for="hop in service.traceroute.hops" :key="hop.hop">
                   <td style="width: 10%">
                     {{ hop.hop }}
                   </td>
@@ -399,7 +401,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
               </tbody>
             </v-table>
 
-            <p v-if="form.traceroute.state === 'complete'">Trace complete.</p>
+            <p v-if="service.traceroute.state === 'complete'">Trace complete.</p>
           </v-window-item>
 
           <v-window-item value="service_scan">
@@ -408,11 +410,11 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
             <connection-info v-if="!connected" />
 
             <template
-              v-if="form.service_scan.data.results && form.service_scan.data.results.length"
+              v-if="service.service_scan.data.results && service.service_scan.data.results.length"
             >
               <v-table density="compact">
                 <tbody>
-                  <tr v-for="x in form.service_scan.data.results" :key="x.service">
+                  <tr v-for="x in service.service_scan.data.results" :key="x.service">
                     <td style="min-width: 160px">{{ x.service }}:</td>
                     <td>
                       <span class="response-pre">{{ x.data }}</span>
@@ -428,9 +430,11 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
             <v-divider class="mb-6" />
             <connection-info v-if="!connected" />
 
-            <v-table v-if="form.spamdblookup.data.results && form.spamdblookup.data.results.length">
+            <v-table
+              v-if="service.spamdblookup.data.results && service.spamdblookup.data.results.length"
+            >
               <tbody>
-                <tr v-for="item in form.spamdblookup.data.results" :key="item.blacklistInfo.key">
+                <tr v-for="item in service.spamdblookup.data.results" :key="item.blacklistInfo.key">
                   <td>
                     <span v-if="item.listed" class="text-red-lighten-1 font-weight-medium">
                       listed
@@ -594,7 +598,7 @@ type Data = {
   connected: boolean
   remoteAddress: string
   socket: Socket
-  form: {
+  service: {
     address_lookup: AddressLookupState
     domain_whois: Omit<TabState, 'data'> & { data: { data: string } }
     dns_records: DnsRecordsState
@@ -617,7 +621,7 @@ export default {
       state: 'initial',
       connected: true,
       remoteAddress: '',
-      form: {
+      service: {
         address_lookup: {
           active: true,
           state: 'initial',
@@ -729,74 +733,76 @@ export default {
               if (this.state === 'limit') {
                 this.limitReachedDialog = true
 
-                for (const [, item] of Object.entries(this.form)) {
+                for (const [, item] of Object.entries(this.service)) {
                   item.state = 'complete'
                 }
               }
 
               if (this.state === 'input_error') {
-                for (const [, item] of Object.entries(this.form)) {
+                for (const [, item] of Object.entries(this.service)) {
                   item.state = 'complete'
                 }
               }
               break
             case 'service_scan':
               if (msg.state === 'working') {
-                this.form[msg.type].data.results.push(msg.data as ServiceScan)
+                this.service[msg.type].data.results.push(msg.data as ServiceScan)
               }
 
-              this.form[msg.type].state = msg.state
+              this.service[msg.type].state = msg.state
               break
             case 'traceroute_hop': {
               if (msg.state === 'working' && msg.hop) {
-                this.form['traceroute'].hops.push(msg.hop)
+                this.service['traceroute'].hops.push(msg.hop)
               }
 
-              this.form['traceroute'].state = msg.state
+              this.service['traceroute'].state = msg.state
               break
             }
             case 'traceroute': {
-              this.form[msg.type].state = msg.state
+              this.service[msg.type].state = msg.state
               break
             }
             case 'address_lookup': {
               if (msg.state === 'complete') {
-                this.form[msg.type].data = msg.data as AddressLookupData
+                this.service[msg.type].data = msg.data as AddressLookupData
               }
 
-              this.form[msg.type].state = msg.state
+              this.service[msg.type].state = msg.state
               break
             }
             case 'domain_whois': {
               if (msg.state === 'complete') {
-                this.form[msg.type].data = msg.data as { data: string }
+                this.service[msg.type].data = msg.data as { data: string }
               }
 
-              this.form[msg.type].state = msg.state
+              this.service[msg.type].state = msg.state
               break
             }
             case 'network_whois': {
               if (msg.state === 'complete') {
-                this.form[msg.type].data = msg.data as { data: string }
+                this.service[msg.type].data = msg.data as { data: string }
               }
 
-              this.form[msg.type].state = msg.state
+              this.service[msg.type].state = msg.state
               break
             }
             case 'dns_records': {
               if (msg.state === 'complete') {
-                this.form[msg.type].data.records = (msg.data as { records: DnsRecord[] }).records
+                this.service[msg.type].data.records = (msg.data as { records: DnsRecord[] }).records
               }
 
-              this.form[msg.type].state = msg.state
+              this.service[msg.type].state = msg.state
               break
             }
             case 'spamdblookup': {
               if (msg.state === 'complete') {
-                this.form[msg.type].data.results = (msg.data as { results: SpamDblookup[] }).results
+                this.service[msg.type].data.results = (
+                  msg.data as { results: SpamDblookup[] }
+                ).results
               }
 
-              this.form[msg.type].state = msg.state
+              this.service[msg.type].state = msg.state
               break
             }
           }
@@ -806,11 +812,11 @@ export default {
     resetServiceData(state: string = 'initial') {
       this.state = state
 
-      for (const [, item] of Object.entries(this.form)) {
+      for (const [, item] of Object.entries(this.service)) {
         item.state = state
       }
 
-      this.form.address_lookup.data = {
+      this.service.address_lookup.data = {
         domain: '',
         hostname: '',
         cname: '',
@@ -819,12 +825,12 @@ export default {
         found: '',
         addresses: []
       }
-      this.form.domain_whois.data = { data: '' }
-      this.form.network_whois.data = { data: '' }
-      this.form.traceroute.data = { ip: '', hostname: '' }
-      this.form.traceroute.hops = []
-      this.form.service_scan.data.results = []
-      this.form.spamdblookup.data = { results: [] }
+      this.service.domain_whois.data = { data: '' }
+      this.service.network_whois.data = { data: '' }
+      this.service.traceroute.data = { ip: '', hostname: '' }
+      this.service.traceroute.hops = []
+      this.service.service_scan.data.results = []
+      this.service.spamdblookup.data = { results: [] }
     },
     activeTabSet: function (tab: string) {
       if (this.activeTab === tab) {
@@ -835,13 +841,13 @@ export default {
       this.resetServiceData('working')
 
       const message = {
-        address_lookup: this.form.address_lookup.input,
-        domain_whois: this.form.domain_whois.active,
-        dns_records: this.form.dns_records.active,
-        network_whois: this.form.network_whois.active,
-        traceroute: this.form.traceroute.active,
-        service_scan: this.form.service_scan.active,
-        spamdblookup: this.form.spamdblookup.active
+        address_lookup: this.service.address_lookup.input,
+        domain_whois: this.service.domain_whois.active,
+        dns_records: this.service.dns_records.active,
+        network_whois: this.service.network_whois.active,
+        traceroute: this.service.traceroute.active,
+        service_scan: this.service.service_scan.active,
+        spamdblookup: this.service.spamdblookup.active
       }
 
       this.socket.emit('message', message)
