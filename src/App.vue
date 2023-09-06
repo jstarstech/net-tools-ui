@@ -610,11 +610,14 @@ type Data = {
   }
 }
 
+const API_URL = import.meta.env.VITE_DEV_PROXY === 'false' ? import.meta.env.VITE_API_URL : ''
+const WS_URL = import.meta.env.VITE_DEV_PROXY === 'false' ? import.meta.env.VITE_WS_URL : ''
+
 export default {
   data(): Data {
     return {
       token: '',
-      socket: io(),
+      socket: io(WS_URL),
       year: '',
       reconnectDialog: false,
       limitReachedDialog: false,
@@ -680,7 +683,7 @@ export default {
     }
   },
   mounted() {
-    fetch('/init')
+    fetch(API_URL + '/init')
       .then((response) => response.json())
       .then((data) => {
         this.token = data.token
@@ -692,7 +695,7 @@ export default {
   },
   methods: {
     init: function () {
-      this.socket = io({
+      this.socket = io(WS_URL, {
         query: { token: this.token }
       })
 
