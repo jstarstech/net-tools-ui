@@ -1,15 +1,24 @@
-/* eslint-env node */
-require('@rushstack/eslint-patch/modern-module-resolution')
+import pluginVue from 'eslint-plugin-vue'
+import vueTsEslintConfig from '@vue/eslint-config-typescript'
+import skipFormatting from '@vue/eslint-config-prettier/skip-formatting'
 
-module.exports = {
-  root: true,
-  extends: [
-    'plugin:vue/vue3-essential',
-    'eslint:recommended',
-    '@vue/eslint-config-typescript',
-    '@vue/eslint-config-prettier/skip-formatting'
-  ],
-  parserOptions: {
-    ecmaVersion: 'latest'
+export default [
+  ...pluginVue.configs['flat/essential'],
+
+  {
+    files: ['**/*.ts', '**/*.tsx', '**/*.mts', '**/*.vue'],
+    rules: {
+      // Turn on other rules that you need.
+      '@typescript-eslint/require-array-sort-compare': 'error'
+    }
+  },
+  skipFormatting,
+  ...vueTsEslintConfig({ extends: ['recommendedTypeChecked'] }),
+  {
+    files: ['**/*.ts', '**/*.tsx', '**/*.mts', '**/*.vue'],
+    rules: {
+      // Turn off the recommended rules that you don't need.
+      '@typescript-eslint/no-redundant-type-constituents': 'off'
+    }
   }
-}
+]
