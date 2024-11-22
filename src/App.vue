@@ -692,6 +692,9 @@ export default {
 
         this.init()
       })
+      .catch((error) => {
+        console.error('Error:', error)
+      })
   },
   methods: {
     init: function () {

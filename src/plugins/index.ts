@@ -11,7 +11,7 @@ import vuetify from './vuetify'
 // Types
 import type { App } from 'vue'
 
-export function registerPlugins (app: App) {
-  loadFonts()
+export function registerPlugins(app: App) {
+  loadFonts() //eslint-disable-line
   app.use(vuetify)
 }
