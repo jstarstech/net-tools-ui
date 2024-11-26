@@ -308,7 +308,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
                   <tr v-if="x.RRType === 'PTR'">
                     <td>{{ x.name }}</td>
                     <td>{{ x.RRType }}</td>
-                    <td>{{ x.data }}</td>
+                    <td>{{ x.address }}</td>
                     <td>{{ x.ttl }}s</td>
                   </tr>
 
@@ -322,7 +322,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
                   <tr v-if="x.RRType === 'NS'">
                     <td>{{ x.name }}</td>
                     <td>{{ x.RRType }}</td>
-                    <td>{{ x.data }}</td>
+                    <td>{{ x.address }}</td>
                     <td>{{ x.ttl }}s</td>
                   </tr>
 
