@@ -796,7 +796,11 @@ export default {
             }
             case 'dns_records': {
               if (msg.state === 'complete') {
-                this.service[msg.type].data.records = (msg.data as { records: DnsRecord[] }).records
+                if ((msg.data as { records: DnsRecord[] }).records) {
+                  this.service[msg.type].data.records = (
+                    msg.data as { records: DnsRecord[] }
+                  ).records
+                }
               }
 
               this.service[msg.type].state = msg.state
