@@ -697,7 +697,7 @@ export default {
       })
   },
   methods: {
-    init: function () {
+    init() {
       this.socket = io(WS_URL, {
         query: { token: this.token }
       })
