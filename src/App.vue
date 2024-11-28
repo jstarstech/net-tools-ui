@@ -721,10 +721,10 @@ export default {
     },
 
     setupSocketEvents() {
-      this.socket.on('connect', this.onSocketConnect)
-      this.socket.on('disconnect', this.onSocketDisconnect)
-      this.socket.on('reconnect', this.onSocketReconnect)
-      this.socket.on('message', this.onSocketMessage)
+      this.socket.on('connect', () => this.onSocketConnect())
+      this.socket.on('disconnect', () => this.onSocketDisconnect())
+      this.socket.on('reconnect', () => this.onSocketReconnect())
+      this.socket.on('message', (msg: Message) => this.onSocketMessage(msg))
     },
 
     onSocketConnect() {
