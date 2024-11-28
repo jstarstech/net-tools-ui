@@ -508,13 +508,6 @@ type TabState = {
   data: object
 }
 
-type TracerouteHop = {
-  ip: string
-  hostname: string
-  hop: string
-  rtt1: string
-}
-
 type TracerouteData = {
   hostname: string
   domain: string
@@ -523,9 +516,15 @@ type TracerouteData = {
   addresses: string[]
 }
 
+type hopInfo = {
+  hop: number
+  ip: string
+  rtt1: string
+}
+
 type TracerouteState = Omit<TabState, 'data'> & {
   data: TracerouteData
-  hops: TracerouteHop[]
+  hops: hopInfo[]
 }
 
 type ServiceScan = {
@@ -579,13 +578,14 @@ type SpamDblookupState = Omit<TabState, 'data'> & {
 }
 
 type AddressLookupData = {
-  domain: string
   hostname: string
-  cname: string
-  ptr_name: string
+  domain: string
   ip: string
-  found: string
+  ptr_name: string
+  cname: string
+  hostnames: string[]
   addresses: string[]
+  found: boolean
 }
 
 type AddressLookupState = Omit<TabState, 'data'> & {
@@ -595,11 +595,107 @@ type AddressLookupState = Omit<TabState, 'data'> & {
 
 type NetworkWhois = Omit<TabState, 'data'> & { data: { data: string } }
 
-type ServerToClientEvents = {
-  message: (message: Message) => void
+type CompletePayload = {
+  state: 'complete' | 'limit' | 'input_error'
 }
 
-type MessagePayload = {
+type AddressLookupPayload = {
+  state: 'complete' | 'working'
+  data: {
+    hostname: string
+    domain: string
+    ip: string
+    ptr_name: string
+    cname: string
+    hostnames: string[]
+    addresses: string[]
+    found: boolean
+  }
+}
+
+type NetworkWhoisPayload = {
+  state: 'complete' | 'working'
+  data: {
+    data: string
+    hostname?: string
+    domain?: string
+    hostnames?: string[]
+    addresses?: string[]
+    ip?: string
+  }
+}
+type DomainWhoisPayload = {
+  state: 'complete' | 'working'
+  data: {
+    data: string
+    domain?: string
+    hostnames?: string[]
+    addresses?: string[]
+    ip?: string
+  }
+}
+type TraceroutePayload = {
+  state: 'complete' | 'working'
+  data?: {
+    domain: string
+    hostname: string
+    hostnames: string[]
+    addresses: string[]
+    ip: string
+  }
+}
+
+type TracerouteHopPayload = {
+  state: 'complete' | 'working'
+  hop: hopInfo
+}
+
+type SpamDbLookupPayload = {
+  state: 'complete' | 'working'
+  data?: {
+    domain: string
+    hostname: string
+    hostnames: string[]
+    addresses: string[]
+    ip: string
+    results: any
+  }
+}
+
+type ServiceScanPayload = {
+  state: 'complete' | 'working'
+  data?: {
+    data: string
+    service: string
+  }
+}
+
+type DnsRecordsPayload = {
+  state: 'complete' | 'working'
+  data?: {
+    data?: string
+    hostname?: string
+    domain?: string
+    ip?: string
+    hostnames?: string[]
+    addresses?: string[]
+    records?: DnsRecord[]
+  }
+}
+
+export interface ServerToClientEvents {
+  address_lookup: (message: AddressLookupPayload) => void
+  domain_whois: (message: DomainWhoisPayload) => void
+  network_whois: (message: NetworkWhoisPayload) => void
+  traceroute: (message: TraceroutePayload) => void
+  traceroute_hop: (message: TracerouteHopPayload) => void
+  spamdblookup: (message: SpamDbLookupPayload) => void
+  service_scan: (message: ServiceScanPayload) => void
+  dns_records: (message: DnsRecordsPayload) => void
+  complete: (message: CompletePayload) => void
+}
+
+type UserInputData = {
   address_lookup: string
   domain_whois: boolean
   dns_records: boolean
@@ -609,8 +705,8 @@ type MessagePayload = {
   spamdblookup: boolean
 }
 
-type ClientToServerEvents = {
-  message: (message: MessagePayload) => void
+export interface ClientToServerEvents {
+  message: (message: UserInputData) => void
 }
 
 type Data = {
@@ -631,28 +727,6 @@ type Data = {
     service_scan: ServiceScanState
     spamdblookup: SpamDblookupState
   }
-}
-
-interface Message {
-  type:
-    | 'address_lookup'
-    | 'domain_whois'
-    | 'dns_records'
-    | 'network_whois'
-    | 'traceroute'
-    | 'service_scan'
-    | 'spamdblookup'
-    | 'complete'
-    | 'traceroute_hop'
-  state: string
-  data:
-    | AddressLookupData
-    | ServiceScan
-    | { records: DnsRecord[] }
-    | { results: SpamDblookup[] }
-    | { ip: string; hostname: string }
-    | { data: string }
-  hop?: TracerouteHop
 }
 
 let token = ''
@@ -685,8 +759,9 @@ export default {
             cname: '',
             ptr_name: '',
             ip: '',
-            found: '',
-            addresses: []
+            found: false,
+            addresses: [],
+            hostnames: []
           }
         },
         domain_whois: {
@@ -758,9 +833,17 @@ export default {
   },
   methods: {
     initializeSocket() {
-      socket.on('connect', () => this.onSocketConnect())
-      socket.on('disconnect', () => this.onSocketDisconnect())
-      socket.on('message', (msg: Message) => this.onSocketMessage(msg))
+      socket.on('connect', this.onSocketConnect.bind(this))
+      socket.on('disconnect', this.onSocketDisconnect.bind(this))
+      socket.on('complete', this.handleCompleteMessage.bind(this))
+      socket.on('service_scan', this.handleServiceScanMessage.bind(this))
+      socket.on('traceroute_hop', this.handleTracerouteHopMessage.bind(this))
+      socket.on('traceroute', this.handleTracerouteMessage.bind(this))
+      socket.on('address_lookup', this.handleAddressLookupMessage.bind(this))
+      socket.on('domain_whois', this.handleDomainWhoisMessage.bind(this))
+      socket.on('network_whois', this.handleNetworkWhoisMessage.bind(this))
+      socket.on('dns_records', this.handleDnsRecordsMessage.bind(this))
+      socket.on('spamdblookup', this.handleSpamDbLookupMessage.bind(this))
 
       socket.connect()
     },
@@ -784,40 +867,7 @@ export default {
         this.connected = 'reconnecting'
       }
     },
-
-    onSocketMessage(msg: Message): void {
-      switch (msg.type) {
-        case 'complete':
-          this.handleCompleteMessage(msg)
-          break
-        case 'service_scan':
-          this.handleServiceScanMessage(msg)
-          break
-        case 'traceroute_hop':
-          this.handleTracerouteHopMessage(msg)
-          break
-        case 'traceroute':
-          this.handleTracerouteMessage(msg)
-          break
-        case 'address_lookup':
-          this.handleAddressLookupMessage(msg)
-          break
-        case 'domain_whois':
-          this.handleDomainWhoisMessage(msg)
-          break
-        case 'network_whois':
-          this.handleNetworkWhoisMessage(msg)
-          break
-        case 'dns_records':
-          this.handleDnsRecordsMessage(msg)
-          break
-        case 'spamdblookup':
-          this.handleSpamDblookupMessage(msg)
-          break
-      }
-    },
-
-    handleCompleteMessage(msg: Message) {
+    handleCompleteMessage(msg: CompletePayload) {
       this.state = msg.state
 
       if (this.state === 'limit') {
@@ -835,25 +885,23 @@ export default {
       }
     },
 
-    handleServiceScanMessage(msg: Message) {
+    handleServiceScanMessage(msg: ServiceScanPayload) {
       this.service['service_scan'].state = msg.state
 
-      if (msg.state === 'working') {
-        ;(this.service['service_scan'] as ServiceScanState).data.results.push(
-          msg.data as ServiceScan
-        )
+      if (msg.state === 'working' && msg.data) {
+        this.service['service_scan'].data.results.push(msg.data)
       }
     },
 
-    handleTracerouteHopMessage(msg: Message) {
+    handleTracerouteHopMessage(msg: TracerouteHopPayload) {
+      this.service['traceroute'].state = msg.state
+
       if (msg.state === 'working' && msg.hop) {
         this.service['traceroute'].hops.push(msg.hop)
       }
-
-      this.service['traceroute'].state = msg.state
     },
 
-    handleTracerouteMessage(msg: Message) {
+    handleTracerouteMessage(msg: TraceroutePayload) {
       this.service['traceroute'].state = msg.state
 
       if (msg.state === 'complete') {
@@ -861,48 +909,43 @@ export default {
       }
     },
 
-    handleAddressLookupMessage(msg: Message) {
-      if (msg.state === 'complete') {
-        this.service['address_lookup'].data = msg.data as AddressLookupData
-      }
-
+    handleAddressLookupMessage(msg: AddressLookupPayload) {
       this.service['address_lookup'].state = msg.state
+
+      if (msg.state === 'complete') {
+        this.service['address_lookup'].data = msg.data
+      }
     },
 
-    handleDomainWhoisMessage(msg: Message) {
+    handleDomainWhoisMessage(msg: DomainWhoisPayload) {
+      this.service['domain_whois'].state = msg.state
+
       if (msg.state === 'complete') {
         this.service['domain_whois'].data = msg.data as { data: string }
       }
-
-      this.service['domain_whois'].state = msg.state
     },
 
-    handleNetworkWhoisMessage(msg: Message) {
+    handleNetworkWhoisMessage(msg: NetworkWhoisPayload) {
+      this.service['network_whois'].state = msg.state
+
       if (msg.state === 'complete') {
         this.service['network_whois'].data = msg.data as { data: string }
       }
-
-      this.service['network_whois'].state = msg.state
     },
 
-    handleDnsRecordsMessage(msg: Message) {
-      if (msg.state === 'complete') {
-        if ((msg.data as { records: DnsRecord[] }).records) {
-          this.service['dns_records'].data.records = (msg.data as { records: DnsRecord[] }).records
-        }
-      }
-
+    handleDnsRecordsMessage(msg: DnsRecordsPayload) {
       this.service['dns_records'].state = msg.state
-    },
 
-    handleSpamDblookupMessage(msg: Message) {
-      if (msg.state === 'complete') {
-        this.service['spamdblookup'].data.results = (
-          msg.data as { results: SpamDblookup[] }
-        ).results
+      if (msg.state === 'complete' && msg?.data?.records) {
+        this.service['dns_records'].data.records = msg.data.records
       }
-
+    },
+    handleSpamDbLookupMessage(msg: SpamDbLookupPayload) {
       this.service['spamdblookup'].state = msg.state
+
+      if (msg.state === 'complete' && msg?.data) {
+        this.service['spamdblookup'].data.results = msg.data.results
+      }
     },
     resetServiceData(state: string = 'initial') {
       this.state = state
@@ -917,8 +960,9 @@ export default {
         cname: '',
         ptr_name: '',
         ip: '',
-        found: '',
-        addresses: []
+        found: false,
+        addresses: [],
+        hostnames: []
       }
       this.service.domain_whois.data = { data: '' }
       this.service.network_whois.data = { data: '' }
