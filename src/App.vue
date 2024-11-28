@@ -611,7 +611,16 @@ type Data = {
 }
 
 interface Message {
-  type: string
+  type:
+    | 'address_lookup'
+    | 'domain_whois'
+    | 'dns_records'
+    | 'network_whois'
+    | 'traceroute'
+    | 'service_scan'
+    | 'spamdblookup'
+    | 'complete'
+    | 'traceroute_hop'
   state: string
   data:
     | AddressLookupData
@@ -795,11 +804,13 @@ export default {
     },
 
     handleServiceScanMessage(msg: Message) {
-      if (msg.state === 'working') {
-        this.service[msg.type].data.results.push(msg.data as ServiceScan)
-      }
+      this.service['service_scan'].state = msg.state
 
-      this.service[msg.type].state = msg.state
+      if (msg.state === 'working') {
+        ;(this.service['service_scan'] as ServiceScanState).data.results.push(
+          msg.data as ServiceScan
+        )
+      }
     },
 
     handleTracerouteHopMessage(msg: Message) {
@@ -811,49 +822,51 @@ export default {
     },
 
     handleTracerouteMessage(msg: Message) {
-      this.service[msg.type].state = msg.state
+      this.service['traceroute'].state = msg.state
     },
 
     handleAddressLookupMessage(msg: Message) {
       if (msg.state === 'complete') {
-        this.service[msg.type].data = msg.data as AddressLookupData
+        this.service['address_lookup'].data = msg.data as AddressLookupData
       }
 
-      this.service[msg.type].state = msg.state
+      this.service['address_lookup'].state = msg.state
     },
 
     handleDomainWhoisMessage(msg: Message) {
       if (msg.state === 'complete') {
-        this.service[msg.type].data = msg.data as { data: string }
+        this.service['domain_whois'].data = msg.data as { data: string }
       }
 
-      this.service[msg.type].state = msg.state
+      this.service['domain_whois'].state = msg.state
     },
 
     handleNetworkWhoisMessage(msg: Message) {
       if (msg.state === 'complete') {
-        this.service[msg.type].data = msg.data as { data: string }
+        this.service['network_whois'].data = msg.data as { data: string }
       }
 
-      this.service[msg.type].state = msg.state
+      this.service['network_whois'].state = msg.state
     },
 
     handleDnsRecordsMessage(msg: Message) {
       if (msg.state === 'complete') {
         if ((msg.data as { records: DnsRecord[] }).records) {
-          this.service[msg.type].data.records = (msg.data as { records: DnsRecord[] }).records
+          this.service['dns_records'].data.records = (msg.data as { records: DnsRecord[] }).records
         }
       }
 
-      this.service[msg.type].state = msg.state
+      this.service['dns_records'].state = msg.state
     },
 
     handleSpamDblookupMessage(msg: Message) {
       if (msg.state === 'complete') {
-        this.service[msg.type].data.results = (msg.data as { results: SpamDblookup[] }).results
+        this.service['spamdblookup'].data.results = (
+          msg.data as { results: SpamDblookup[] }
+        ).results
       }
 
-      this.service[msg.type].state = msg.state
+      this.service['spamdblookup'].state = msg.state
     },
     resetServiceData(state: string = 'initial') {
       this.state = state
