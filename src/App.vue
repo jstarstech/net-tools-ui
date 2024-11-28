@@ -868,8 +868,8 @@ export default {
 </script>
 
 <style>
-.dnsRecordsTable th td:first-child,
-.dnsRecordsTable tr td:first-child {
+.dnsRecordsTable th:first-child,
+.dnsRecordsTable td:first-child {
   max-width: 200px;
   word-wrap: break-word;
 }
