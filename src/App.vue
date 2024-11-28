@@ -747,84 +747,113 @@ export default {
     onSocketMessage(msg: Message): void {
       switch (msg.type) {
         case 'complete':
-          this.state = msg.state
-
-          if (this.state === 'limit') {
-            this.limitReachedDialog = true
-
-            for (const [, item] of Object.entries(this.service)) {
-              item.state = 'complete'
-            }
-          }
-
-          if (this.state === 'input_error') {
-            for (const [, item] of Object.entries(this.service)) {
-              item.state = 'complete'
-            }
-          }
+          this.handleCompleteMessage(msg)
           break
         case 'service_scan':
-          if (msg.state === 'working') {
-            this.service[msg.type].data.results.push(msg.data as ServiceScan)
-          }
+          this.handleServiceScanMessage(msg)
+          break
+        case 'traceroute_hop':
+          this.handleTracerouteHopMessage(msg)
+          break
+        case 'traceroute':
+          this.handleTracerouteMessage(msg)
+          break
+        case 'address_lookup':
+          this.handleAddressLookupMessage(msg)
+          break
+        case 'domain_whois':
+          this.handleDomainWhoisMessage(msg)
+          break
+        case 'network_whois':
+          this.handleNetworkWhoisMessage(msg)
+          break
+        case 'dns_records':
+          this.handleDnsRecordsMessage(msg)
+          break
+        case 'spamdblookup':
+          this.handleSpamDblookupMessage(msg)
+          break
+      }
+    },
 
-          this.service[msg.type].state = msg.state
-          break
-        case 'traceroute_hop': {
-          if (msg.state === 'working' && msg.hop) {
-            this.service['traceroute'].hops.push(msg.hop)
-          }
+    handleCompleteMessage(msg: Message) {
+      this.state = msg.state
 
-          this.service['traceroute'].state = msg.state
-          break
-        }
-        case 'traceroute': {
-          this.service[msg.type].state = msg.state
-          break
-        }
-        case 'address_lookup': {
-          if (msg.state === 'complete') {
-            this.service[msg.type].data = msg.data as AddressLookupData
-          }
+      if (this.state === 'limit') {
+        this.limitReachedDialog = true
 
-          this.service[msg.type].state = msg.state
-          break
-        }
-        case 'domain_whois': {
-          if (msg.state === 'complete') {
-            this.service[msg.type].data = msg.data as { data: string }
-          }
-
-          this.service[msg.type].state = msg.state
-          break
-        }
-        case 'network_whois': {
-          if (msg.state === 'complete') {
-            this.service[msg.type].data = msg.data as { data: string }
-          }
-
-          this.service[msg.type].state = msg.state
-          break
-        }
-        case 'dns_records': {
-          if (msg.state === 'complete') {
-            if ((msg.data as { records: DnsRecord[] }).records) {
-              this.service[msg.type].data.records = (msg.data as { records: DnsRecord[] }).records
-            }
-          }
-
-          this.service[msg.type].state = msg.state
-          break
-        }
-        case 'spamdblookup': {
-          if (msg.state === 'complete') {
-            this.service[msg.type].data.results = (msg.data as { results: SpamDblookup[] }).results
-          }
-
-          this.service[msg.type].state = msg.state
-          break
+        for (const [, item] of Object.entries(this.service)) {
+          item.state = 'complete'
         }
       }
+
+      if (this.state === 'input_error') {
+        for (const [, item] of Object.entries(this.service)) {
+          item.state = 'complete'
+        }
+      }
+    },
+
+    handleServiceScanMessage(msg: Message) {
+      if (msg.state === 'working') {
+        this.service[msg.type].data.results.push(msg.data as ServiceScan)
+      }
+
+      this.service[msg.type].state = msg.state
+    },
+
+    handleTracerouteHopMessage(msg: Message) {
+      if (msg.state === 'working' && msg.hop) {
+        this.service['traceroute'].hops.push(msg.hop)
+      }
+
+      this.service['traceroute'].state = msg.state
+    },
+
+    handleTracerouteMessage(msg: Message) {
+      this.service[msg.type].state = msg.state
+    },
+
+    handleAddressLookupMessage(msg: Message) {
+      if (msg.state === 'complete') {
+        this.service[msg.type].data = msg.data as AddressLookupData
+      }
+
+      this.service[msg.type].state = msg.state
+    },
+
+    handleDomainWhoisMessage(msg: Message) {
+      if (msg.state === 'complete') {
+        this.service[msg.type].data = msg.data as { data: string }
+      }
+
+      this.service[msg.type].state = msg.state
+    },
+
+    handleNetworkWhoisMessage(msg: Message) {
+      if (msg.state === 'complete') {
+        this.service[msg.type].data = msg.data as { data: string }
+      }
+
+      this.service[msg.type].state = msg.state
+    },
+
+    handleDnsRecordsMessage(msg: Message) {
+      if (msg.state === 'complete') {
+        if ((msg.data as { records: DnsRecord[] }).records) {
+          this.service[msg.type].data.records = (msg.data as { records: DnsRecord[] }).records
+        }
+      }
+
+      this.service[msg.type].state = msg.state
+    },
+
+    handleSpamDblookupMessage(msg: Message) {
+      if (msg.state === 'complete') {
+        this.service[msg.type].data.results = (msg.data as { results: SpamDblookup[] }).results
+      }
+
+      this.service[msg.type].state = msg.state
     },
     resetServiceData(state: string = 'initial') {
       this.state = state
