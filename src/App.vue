@@ -517,8 +517,16 @@ type TracerouteHop = {
   rtt1: string
 }
 
+type TracerouteData = {
+  hostname: string
+  domain: string
+  ip: string
+  hostnames: string[]
+  addresses: string[]
+}
+
 type TracerouteState = Omit<TabState, 'data'> & {
-  data: { ip: string; hostname: string }
+  data: TracerouteData
   hops: TracerouteHop[]
 }
 
@@ -627,6 +635,7 @@ interface Message {
     | ServiceScan
     | { records: DnsRecord[] }
     | { results: SpamDblookup[] }
+    | { ip: string; hostname: string }
     | { data: string }
   hop?: TracerouteHop
 }
@@ -685,7 +694,13 @@ export default {
         traceroute: {
           active: true,
           state: 'initial',
-          data: { ip: '', hostname: '' },
+          data: {
+            ip: '',
+            hostname: '',
+            domain: '',
+            hostnames: [],
+            addresses: []
+          },
           hops: []
         },
         service_scan: {
@@ -823,6 +838,10 @@ export default {
 
     handleTracerouteMessage(msg: Message) {
       this.service['traceroute'].state = msg.state
+
+      if (msg.state === 'complete') {
+        this.service['traceroute'].data = msg.data as TracerouteData
+      }
     },
 
     handleAddressLookupMessage(msg: Message) {
@@ -886,7 +905,13 @@ export default {
       }
       this.service.domain_whois.data = { data: '' }
       this.service.network_whois.data = { data: '' }
-      this.service.traceroute.data = { ip: '', hostname: '' }
+      this.service.traceroute.data = {
+        ip: '',
+        hostname: '',
+        domain: '',
+        hostnames: [],
+        addresses: []
+      }
       this.service.traceroute.hops = []
       this.service.service_scan.data.results = []
       this.service.spamdblookup.data = { results: [] }
