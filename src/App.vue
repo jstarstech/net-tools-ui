@@ -53,7 +53,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
           </v-col>
           <v-col md="4" class="d-flex align-center pt-0 pb-0 px-0 px-sm-3">
             <v-checkbox
-              label="DNS records"
+              label="DNS Records"
               color="blue-grey-darken-1"
               density="compact"
               hide-details
