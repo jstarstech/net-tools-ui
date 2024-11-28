@@ -597,6 +597,24 @@ type AddressLookupState = Omit<TabState, 'data'> & {
 
 type NetworkWhois = Omit<TabState, 'data'> & { data: { data: string } }
 
+type ServerToClientEvents = {
+  message: (message: Message) => void
+}
+
+type MessagePayload = {
+  address_lookup: string
+  domain_whois: boolean
+  dns_records: boolean
+  network_whois: boolean
+  traceroute: boolean
+  service_scan: boolean
+  spamdblookup: boolean
+}
+
+type ClientToServerEvents = {
+  message: (message: MessagePayload) => void
+}
+
 type Data = {
   token: string
   year: string
@@ -606,7 +624,7 @@ type Data = {
   state: string
   connected: boolean
   remoteAddress: string
-  socket: Socket
+  socket: Socket<ServerToClientEvents, ClientToServerEvents>
   service: {
     address_lookup: AddressLookupState
     domain_whois: Omit<TabState, 'data'> & { data: { data: string } }
