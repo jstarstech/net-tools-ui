@@ -20,7 +20,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
           class="ma-2"
           size="large"
           color="#2185d0"
-          :disabled="state === 'working'"
+          :disabled="!isConnected || state === 'working'"
           @click="getData()"
         >
           GO
@@ -198,7 +198,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
           <v-window-item value="address_lookup">
             <h3 class="text-h5">Address lookup</h3>
             <v-divider class="mb-6" />
-            <connection-info v-if="!connected" />
+            <connection-info v-if="!isConnected" />
 
             <v-table v-if="service.address_lookup.data && service.address_lookup.data.found">
               <tbody>
@@ -254,21 +254,21 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
           <v-window-item value="domain_whois">
             <h3 class="text-h5">Domain Whois record</h3>
             <v-divider class="mb-6" />
-            <connection-info v-if="!connected" />
+            <connection-info v-if="!isConnected" />
             <pre v-if="service.domain_whois.data.data">{{ service.domain_whois.data.data }}</pre>
           </v-window-item>
 
           <v-window-item value="network_whois">
             <h3 class="text-h5">Network Whois record</h3>
             <v-divider class="mb-6" />
-            <connection-info v-if="!connected" />
+            <connection-info v-if="!isConnected" />
             <pre v-if="service.network_whois.data.data">{{ service.network_whois.data.data }}</pre>
           </v-window-item>
 
           <v-window-item value="dns_records">
             <h3 class="text-h5">DNS records</h3>
             <v-divider class="mb-6" />
-            <connection-info v-if="!connected" />
+            <connection-info v-if="!isConnected" />
 
             <v-table
               v-if="service.dns_records.data.records && service.dns_records.data.records.length"
@@ -366,7 +366,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
           <v-window-item value="traceroute">
             <h3 class="text-h5">Traceroute</h3>
             <v-divider class="mb-6" />
-            <connection-info v-if="!connected" />
+            <connection-info v-if="!isConnected" />
             <template v-if="service.traceroute.data.ip">
               <p>
                 Tracing route to
@@ -408,7 +408,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
           <v-window-item value="service_scan">
             <h3 class="text-h5">Service scan</h3>
             <v-divider class="mb-6" />
-            <connection-info v-if="!connected" />
+            <connection-info v-if="!isConnected" />
 
             <template
               v-if="service.service_scan.data.results && service.service_scan.data.results.length"
@@ -429,7 +429,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
           <v-window-item value="spamdblookup">
             <h3 class="text-h5">Spam Databases Lookup</h3>
             <v-divider class="mb-6" />
-            <connection-info v-if="!connected" />
+            <connection-info v-if="!isConnected" />
 
             <v-table
               v-if="service.spamdblookup.data.results && service.spamdblookup.data.results.length"
@@ -622,7 +622,7 @@ type Data = {
   limitReachedDialog: boolean
   activeTab: string
   state: string
-  connected: boolean
+  connected: 'initial' | 'connected' | 'disconnected' | 'reconnecting'
   remoteAddress: string
   socket: Socket<ServerToClientEvents, ClientToServerEvents>
   service: {
@@ -671,7 +671,7 @@ export default {
       limitReachedDialog: false,
       activeTab: 'address_lookup',
       state: 'initial',
-      connected: true,
+      connected: 'initial',
       remoteAddress: '',
       service: {
         address_lookup: {
@@ -736,6 +736,11 @@ export default {
       }
     }
   },
+  computed: {
+    isConnected() {
+      return this.connected === 'connected'
+    }
+  },
   mounted() {
     fetch(API_URL + '/init')
       .then((response) => response.json())
@@ -765,25 +770,27 @@ export default {
     setupSocketEvents() {
       this.socket.on('connect', () => this.onSocketConnect())
       this.socket.on('disconnect', () => this.onSocketDisconnect())
-      this.socket.on('reconnect', () => this.onSocketReconnect())
       this.socket.on('message', (msg: Message) => this.onSocketMessage(msg))
     },
-
     onSocketConnect() {
       this.socket.sendBuffer = []
-      this.connected = true
+
+      if (this.connected === 'reconnecting') {
+        this.connected = 'reconnecting'
+        this.reconnectDialog = false
+
+        this.resetServiceData('initial')
+      }
+
+      this.connected = 'connected'
     },
 
     onSocketDisconnect() {
       this.reconnectDialog = true
-      this.connected = false
-    },
 
-    onSocketReconnect() {
-      this.socket.sendBuffer = []
-      this.connected = true
-      this.reconnectDialog = false
-      this.resetServiceData('initial')
+      if (this.connected === 'connected') {
+        this.connected = 'reconnecting'
+      }
     },
 
     onSocketMessage(msg: Message): void {
