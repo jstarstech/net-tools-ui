@@ -971,4 +971,9 @@ export default {
   max-width: 200px;
   word-wrap: break-word;
 }
+.ipaddr {
+  color: #576e7b;
+  font-weight: 500;
+  letter-spacing: 1px;
+}
 </style>
