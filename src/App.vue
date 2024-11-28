@@ -610,6 +610,18 @@ type Data = {
   }
 }
 
+interface Message {
+  type: string
+  state: string
+  data:
+    | AddressLookupData
+    | ServiceScan
+    | { records: DnsRecord[] }
+    | { results: SpamDblookup[] }
+    | { data: string }
+  hop?: TracerouteHop
+}
+
 const API_URL = import.meta.env.VITE_DEV_PROXY === 'false' ? import.meta.env.VITE_API_URL : ''
 const WS_URL = import.meta.env.VITE_DEV_PROXY === 'false' ? import.meta.env.VITE_WS_URL : ''
 
@@ -720,105 +732,90 @@ export default {
         this.resetServiceData('initial')
       })
 
-      this.socket.on(
-        'message',
-        (msg: {
-          type: string
-          state: string
-          data:
-            | AddressLookupData
-            | ServiceScan
-            | { records: DnsRecord[] }
-            | { results: SpamDblookup[] }
-            | { data: string }
-          hop?: TracerouteHop
-        }): void => {
-          switch (msg.type) {
-            case 'complete':
-              this.state = msg.state
+      this.socket.on('message', (msg: Message): void => {
+        switch (msg.type) {
+          case 'complete':
+            this.state = msg.state
 
-              if (this.state === 'limit') {
-                this.limitReachedDialog = true
+            if (this.state === 'limit') {
+              this.limitReachedDialog = true
 
-                for (const [, item] of Object.entries(this.service)) {
-                  item.state = 'complete'
-                }
+              for (const [, item] of Object.entries(this.service)) {
+                item.state = 'complete'
               }
-
-              if (this.state === 'input_error') {
-                for (const [, item] of Object.entries(this.service)) {
-                  item.state = 'complete'
-                }
-              }
-              break
-            case 'service_scan':
-              if (msg.state === 'working') {
-                this.service[msg.type].data.results.push(msg.data as ServiceScan)
-              }
-
-              this.service[msg.type].state = msg.state
-              break
-            case 'traceroute_hop': {
-              if (msg.state === 'working' && msg.hop) {
-                this.service['traceroute'].hops.push(msg.hop)
-              }
-
-              this.service['traceroute'].state = msg.state
-              break
             }
-            case 'traceroute': {
-              this.service[msg.type].state = msg.state
-              break
-            }
-            case 'address_lookup': {
-              if (msg.state === 'complete') {
-                this.service[msg.type].data = msg.data as AddressLookupData
-              }
 
-              this.service[msg.type].state = msg.state
-              break
-            }
-            case 'domain_whois': {
-              if (msg.state === 'complete') {
-                this.service[msg.type].data = msg.data as { data: string }
+            if (this.state === 'input_error') {
+              for (const [, item] of Object.entries(this.service)) {
+                item.state = 'complete'
               }
-
-              this.service[msg.type].state = msg.state
-              break
             }
-            case 'network_whois': {
-              if (msg.state === 'complete') {
-                this.service[msg.type].data = msg.data as { data: string }
+            break
+          case 'service_scan':
+            if (msg.state === 'working') {
+              this.service[msg.type].data.results.push(msg.data as ServiceScan)
+            }
+
+            this.service[msg.type].state = msg.state
+            break
+          case 'traceroute_hop': {
+            if (msg.state === 'working' && msg.hop) {
+              this.service['traceroute'].hops.push(msg.hop)
+            }
+
+            this.service['traceroute'].state = msg.state
+            break
+          }
+          case 'traceroute': {
+            this.service[msg.type].state = msg.state
+            break
+          }
+          case 'address_lookup': {
+            if (msg.state === 'complete') {
+              this.service[msg.type].data = msg.data as AddressLookupData
+            }
+
+            this.service[msg.type].state = msg.state
+            break
+          }
+          case 'domain_whois': {
+            if (msg.state === 'complete') {
+              this.service[msg.type].data = msg.data as { data: string }
+            }
+
+            this.service[msg.type].state = msg.state
+            break
+          }
+          case 'network_whois': {
+            if (msg.state === 'complete') {
+              this.service[msg.type].data = msg.data as { data: string }
+            }
+
+            this.service[msg.type].state = msg.state
+            break
+          }
+          case 'dns_records': {
+            if (msg.state === 'complete') {
+              if ((msg.data as { records: DnsRecord[] }).records) {
+                this.service[msg.type].data.records = (msg.data as { records: DnsRecord[] }).records
               }
-
-              this.service[msg.type].state = msg.state
-              break
             }
-            case 'dns_records': {
-              if (msg.state === 'complete') {
-                if ((msg.data as { records: DnsRecord[] }).records) {
-                  this.service[msg.type].data.records = (
-                    msg.data as { records: DnsRecord[] }
-                  ).records
-                }
-              }
 
-              this.service[msg.type].state = msg.state
-              break
+            this.service[msg.type].state = msg.state
+            break
+          }
+          case 'spamdblookup': {
+            if (msg.state === 'complete') {
+              this.service[msg.type].data.results = (
+                msg.data as { results: SpamDblookup[] }
+              ).results
             }
-            case 'spamdblookup': {
-              if (msg.state === 'complete') {
-                this.service[msg.type].data.results = (
-                  msg.data as { results: SpamDblookup[] }
-                ).results
-              }
 
-              this.service[msg.type].state = msg.state
-              break
-            }
+            this.service[msg.type].state = msg.state
+            break
           }
         }
-      )
+      })
     },
     resetServiceData(state: string = 'initial') {
       this.state = state
