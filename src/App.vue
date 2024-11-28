@@ -891,12 +891,12 @@ export default {
       this.service.service_scan.data.results = []
       this.service.spamdblookup.data = { results: [] }
     },
-    activeTabSet: function (tab: string) {
+    activeTabSet(tab: string) {
       if (this.activeTab === tab) {
         this.activeTab = 'address_lookup'
       }
     },
-    getData: function () {
+    getData() {
       this.resetServiceData('working')
 
       const message = {
