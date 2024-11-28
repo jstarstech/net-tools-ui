@@ -84,7 +84,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
               v-model="service.network_whois.active"
               :disabled="state === 'working'"
               @click="activeTabSet('network_whois')"
-            ></v-checkbox>
+            />
           </v-col>
           <v-col md="4" class="d-flex align-center pt-0 pb-0 px-0 px-sm-3">
             <v-checkbox
@@ -95,7 +95,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
               v-model="service.service_scan.active"
               :disabled="state === 'working'"
               @click="activeTabSet('service_scan')"
-            ></v-checkbox>
+            />
           </v-col>
           <v-col md="4" class="d-flex align-center pt-0 pb-0 px-0 px-sm-3">
             <v-checkbox
@@ -106,7 +106,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
               v-model="service.spamdblookup.active"
               :disabled="state === 'working'"
               @click="activeTabSet('spamdblookup')"
-            ></v-checkbox>
+            />
           </v-col>
         </v-row>
       </v-col>
