@@ -499,6 +499,9 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
 <script lang="ts">
 import { io, Socket } from 'socket.io-client'
 
+const API_URL = import.meta.env.VITE_DEV_PROXY === 'false' ? import.meta.env.VITE_API_URL : ''
+const WS_URL = import.meta.env.VITE_DEV_PROXY === 'false' ? import.meta.env.VITE_WS_URL : ''
+
 type TabState = {
   active: boolean
   state: string
@@ -652,9 +655,6 @@ interface Message {
     | { data: string }
   hop?: TracerouteHop
 }
-
-const API_URL = import.meta.env.VITE_DEV_PROXY === 'false' ? import.meta.env.VITE_API_URL : ''
-const WS_URL = import.meta.env.VITE_DEV_PROXY === 'false' ? import.meta.env.VITE_WS_URL : ''
 
 export default {
   data(): Data {
