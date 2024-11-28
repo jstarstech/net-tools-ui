@@ -223,15 +223,10 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
                   </td>
                 </tr>
 
-                <tr v-if="service.address_lookup.data.cname.length">
+                <tr v-if="service.address_lookup.data.cname">
                   <td>CNAME</td>
                   <td>
-                    <span
-                      v-for="address in service.address_lookup.data.cname"
-                      :key="address"
-                      class="ipaddr"
-                      >{{ address }}</span
-                    >;
+                    <span class="ipaddr">{{ service.address_lookup.data.cname }}</span>
                   </td>
                 </tr>
 
