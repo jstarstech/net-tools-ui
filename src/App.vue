@@ -622,7 +622,6 @@ type Data = {
   state: string
   connected: 'initial' | 'connected' | 'disconnected' | 'reconnecting'
   remoteAddress: string
-  socket: Socket<ServerToClientEvents, ClientToServerEvents>
   service: {
     address_lookup: AddressLookupState
     domain_whois: Omit<TabState, 'data'> & { data: { data: string } }
@@ -656,11 +655,18 @@ interface Message {
   hop?: TracerouteHop
 }
 
+let token = ''
+const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(WS_URL, {
+  autoConnect: false,
+  auth: (callback) => {
+    callback({ token })
+  }
+})
+
 export default {
   data(): Data {
     return {
       token: '',
-      socket: io(WS_URL),
       year: '',
       reconnectDialog: false,
       limitReachedDialog: false,
@@ -740,35 +746,26 @@ export default {
     fetch(API_URL + '/init')
       .then((response) => response.json())
       .then((data) => {
-        this.token = data.token
+        token = data.token
         this.year = data.year
         this.remoteAddress = data.remoteAddress
 
-        this.init()
+        this.initializeSocket()
       })
       .catch((error) => {
         console.error('Error:', error)
       })
   },
   methods: {
-    init() {
-      this.initializeSocket()
-      this.setupSocketEvents()
-    },
-
     initializeSocket() {
-      this.socket = io(WS_URL, {
-        query: { token: this.token }
-      })
-    },
+      socket.on('connect', () => this.onSocketConnect())
+      socket.on('disconnect', () => this.onSocketDisconnect())
+      socket.on('message', (msg: Message) => this.onSocketMessage(msg))
 
-    setupSocketEvents() {
-      this.socket.on('connect', () => this.onSocketConnect())
-      this.socket.on('disconnect', () => this.onSocketDisconnect())
-      this.socket.on('message', (msg: Message) => this.onSocketMessage(msg))
+      socket.connect()
     },
     onSocketConnect() {
-      this.socket.sendBuffer = []
+      socket.sendBuffer = []
 
       if (this.connected === 'reconnecting') {
         this.connected = 'reconnecting'
@@ -954,7 +951,7 @@ export default {
         spamdblookup: this.service.spamdblookup.active
       }
 
-      this.socket.emit('message', message)
+      socket.emit('message', message)
     }
   }
 }
