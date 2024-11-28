@@ -710,112 +710,121 @@ export default {
   },
   methods: {
     init() {
+      this.initializeSocket()
+      this.setupSocketEvents()
+    },
+
+    initializeSocket() {
       this.socket = io(WS_URL, {
         query: { token: this.token }
       })
+    },
 
-      this.socket.on('connect', () => {
-        this.socket.sendBuffer = []
-        this.connected = true
-      })
+    setupSocketEvents() {
+      this.socket.on('connect', this.onSocketConnect)
+      this.socket.on('disconnect', this.onSocketDisconnect)
+      this.socket.on('reconnect', this.onSocketReconnect)
+      this.socket.on('message', this.onSocketMessage)
+    },
 
-      this.socket.on('disconnect', () => {
-        this.reconnectDialog = true
-        this.connected = false
-      })
+    onSocketConnect() {
+      this.socket.sendBuffer = []
+      this.connected = true
+    },
 
-      this.socket.on('reconnect', () => {
-        this.socket.sendBuffer = []
-        this.connected = true
-        this.reconnectDialog = false
+    onSocketDisconnect() {
+      this.reconnectDialog = true
+      this.connected = false
+    },
 
-        this.resetServiceData('initial')
-      })
+    onSocketReconnect() {
+      this.socket.sendBuffer = []
+      this.connected = true
+      this.reconnectDialog = false
+      this.resetServiceData('initial')
+    },
 
-      this.socket.on('message', (msg: Message): void => {
-        switch (msg.type) {
-          case 'complete':
-            this.state = msg.state
+    onSocketMessage(msg: Message): void {
+      switch (msg.type) {
+        case 'complete':
+          this.state = msg.state
 
-            if (this.state === 'limit') {
-              this.limitReachedDialog = true
+          if (this.state === 'limit') {
+            this.limitReachedDialog = true
 
-              for (const [, item] of Object.entries(this.service)) {
-                item.state = 'complete'
-              }
+            for (const [, item] of Object.entries(this.service)) {
+              item.state = 'complete'
             }
-
-            if (this.state === 'input_error') {
-              for (const [, item] of Object.entries(this.service)) {
-                item.state = 'complete'
-              }
-            }
-            break
-          case 'service_scan':
-            if (msg.state === 'working') {
-              this.service[msg.type].data.results.push(msg.data as ServiceScan)
-            }
-
-            this.service[msg.type].state = msg.state
-            break
-          case 'traceroute_hop': {
-            if (msg.state === 'working' && msg.hop) {
-              this.service['traceroute'].hops.push(msg.hop)
-            }
-
-            this.service['traceroute'].state = msg.state
-            break
           }
-          case 'traceroute': {
-            this.service[msg.type].state = msg.state
-            break
-          }
-          case 'address_lookup': {
-            if (msg.state === 'complete') {
-              this.service[msg.type].data = msg.data as AddressLookupData
-            }
 
-            this.service[msg.type].state = msg.state
-            break
-          }
-          case 'domain_whois': {
-            if (msg.state === 'complete') {
-              this.service[msg.type].data = msg.data as { data: string }
+          if (this.state === 'input_error') {
+            for (const [, item] of Object.entries(this.service)) {
+              item.state = 'complete'
             }
-
-            this.service[msg.type].state = msg.state
-            break
           }
-          case 'network_whois': {
-            if (msg.state === 'complete') {
-              this.service[msg.type].data = msg.data as { data: string }
-            }
-
-            this.service[msg.type].state = msg.state
-            break
+          break
+        case 'service_scan':
+          if (msg.state === 'working') {
+            this.service[msg.type].data.results.push(msg.data as ServiceScan)
           }
-          case 'dns_records': {
-            if (msg.state === 'complete') {
-              if ((msg.data as { records: DnsRecord[] }).records) {
-                this.service[msg.type].data.records = (msg.data as { records: DnsRecord[] }).records
-              }
-            }
 
-            this.service[msg.type].state = msg.state
-            break
+          this.service[msg.type].state = msg.state
+          break
+        case 'traceroute_hop': {
+          if (msg.state === 'working' && msg.hop) {
+            this.service['traceroute'].hops.push(msg.hop)
           }
-          case 'spamdblookup': {
-            if (msg.state === 'complete') {
-              this.service[msg.type].data.results = (
-                msg.data as { results: SpamDblookup[] }
-              ).results
-            }
 
-            this.service[msg.type].state = msg.state
-            break
-          }
+          this.service['traceroute'].state = msg.state
+          break
         }
-      })
+        case 'traceroute': {
+          this.service[msg.type].state = msg.state
+          break
+        }
+        case 'address_lookup': {
+          if (msg.state === 'complete') {
+            this.service[msg.type].data = msg.data as AddressLookupData
+          }
+
+          this.service[msg.type].state = msg.state
+          break
+        }
+        case 'domain_whois': {
+          if (msg.state === 'complete') {
+            this.service[msg.type].data = msg.data as { data: string }
+          }
+
+          this.service[msg.type].state = msg.state
+          break
+        }
+        case 'network_whois': {
+          if (msg.state === 'complete') {
+            this.service[msg.type].data = msg.data as { data: string }
+          }
+
+          this.service[msg.type].state = msg.state
+          break
+        }
+        case 'dns_records': {
+          if (msg.state === 'complete') {
+            if ((msg.data as { records: DnsRecord[] }).records) {
+              this.service[msg.type].data.records = (msg.data as { records: DnsRecord[] }).records
+            }
+          }
+
+          this.service[msg.type].state = msg.state
+          break
+        }
+        case 'spamdblookup': {
+          if (msg.state === 'complete') {
+            this.service[msg.type].data.results = (msg.data as { results: SpamDblookup[] }).results
+          }
+
+          this.service[msg.type].state = msg.state
+          break
+        }
+      }
     },
     resetServiceData(state: string = 'initial') {
       this.state = state
