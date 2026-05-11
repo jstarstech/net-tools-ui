@@ -15,12 +15,13 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
           hide-details
           :error="state === 'input_error'"
           v-model="service.address_lookup.input"
+          @keyup.enter="submitFromInput()"
         />
         <v-btn
           class="ma-2"
           size="large"
           color="#2185d0"
-          :disabled="!isConnected || state === 'working'"
+          :disabled="!canSubmit"
           @click="getData()"
         >
           GO
@@ -817,6 +818,9 @@ export default {
   computed: {
     isConnected() {
       return this.connected === 'connected'
+    },
+    canSubmit() {
+      return this.isConnected && this.state !== 'working'
     }
   },
   mounted() {
@@ -983,6 +987,13 @@ export default {
       if (this.activeTab === tab) {
         this.activeTab = 'address_lookup'
       }
+    },
+    submitFromInput() {
+      if (!this.canSubmit) {
+        return
+      }
+
+      this.getData()
     },
     getData() {
       this.resetServiceData('working')
