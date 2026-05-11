@@ -4,8 +4,8 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
 </script>
 
 <template id="app">
-  <v-container>
-    <h1 class="text-h2 text-grey-darken-4">NetTools</h1>
+  <v-container class="app-layout">
+    <h1 class="app-title text-grey-darken-4">NetTools</h1>
 
     <v-row>
       <v-col sm="10" md="8" lg="6" class="d-flex align-center pb-0">
@@ -38,7 +38,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
       </v-col>
     </v-row>
     <v-row>
-      <v-col xs="12" sm="10" md="8" lg="6">
+      <v-col cols="12" sm="10" md="8" lg="6">
         <v-row>
           <v-col md="4" class="d-flex align-center pt-0 pb-0 px-0 px-sm-3">
             <v-checkbox
@@ -113,7 +113,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
     </v-row>
     <v-row>
       <v-col md="12">
-        <v-tabs v-model="activeTab" show-arrows class="text-grey-darken-1">
+        <v-tabs v-model="activeTab" show-arrows class="app-tabs text-grey-darken-1">
           <v-tab value="address_lookup">
             Address
             <v-progress-circular
@@ -196,7 +196,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
       <v-col md="12">
         <v-window v-model="activeTab" style="min-height: 40vh" class="text-grey-darken-2">
           <v-window-item value="address_lookup">
-            <h3 class="text-h5">Address lookup</h3>
+            <h3 class="app-section-title">Address lookup</h3>
             <v-divider class="mb-6" />
             <connection-info v-if="!isConnected" />
 
@@ -247,21 +247,21 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
           </v-window-item>
 
           <v-window-item value="domain_whois">
-            <h3 class="text-h5">Domain Whois record</h3>
+            <h3 class="app-section-title">Domain Whois record</h3>
             <v-divider class="mb-6" />
             <connection-info v-if="!isConnected" />
             <pre v-if="service.domain_whois.data.data">{{ service.domain_whois.data.data }}</pre>
           </v-window-item>
 
           <v-window-item value="network_whois">
-            <h3 class="text-h5">Network Whois record</h3>
+            <h3 class="app-section-title">Network Whois record</h3>
             <v-divider class="mb-6" />
             <connection-info v-if="!isConnected" />
             <pre v-if="service.network_whois.data.data">{{ service.network_whois.data.data }}</pre>
           </v-window-item>
 
           <v-window-item value="dns_records">
-            <h3 class="text-h5">DNS records</h3>
+            <h3 class="app-section-title">DNS records</h3>
             <v-divider class="mb-6" />
             <connection-info v-if="!isConnected" />
 
@@ -359,7 +359,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
           </v-window-item>
 
           <v-window-item value="traceroute">
-            <h3 class="text-h5">Traceroute</h3>
+            <h3 class="app-section-title">Traceroute</h3>
             <v-divider class="mb-6" />
             <connection-info v-if="!isConnected" />
             <template v-if="service.traceroute.data.ip">
@@ -401,7 +401,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
           </v-window-item>
 
           <v-window-item value="service_scan">
-            <h3 class="text-h5">Service scan</h3>
+            <h3 class="app-section-title">Service scan</h3>
             <v-divider class="mb-6" />
             <connection-info v-if="!isConnected" />
 
@@ -422,7 +422,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
           </v-window-item>
 
           <v-window-item value="spamdblookup">
-            <h3 class="text-h5">Spam Databases Lookup</h3>
+            <h3 class="app-section-title">Spam Databases Lookup</h3>
             <v-divider class="mb-6" />
             <connection-info v-if="!isConnected" />
 
@@ -1013,5 +1013,51 @@ export default {
   color: #576e7b;
   font-weight: 500;
   letter-spacing: 1px;
+}
+.app-title {
+  font-family: Roboto, sans-serif;
+  font-size: 3.75rem;
+  font-weight: 300;
+  letter-spacing: -0.0083333333em;
+  line-height: 1;
+  text-transform: none;
+}
+.app-section-title {
+  font-family: Roboto, sans-serif;
+  font-size: 1.5rem;
+  font-weight: 400;
+  letter-spacing: normal;
+  line-height: 1.333;
+  text-transform: none;
+}
+.app-tabs .v-tab {
+  font-family: Roboto, sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.0892857143em;
+  text-indent: 0.0892857143em;
+  text-transform: uppercase;
+}
+.app-layout .v-row + .v-row {
+  margin-top: 12px;
+}
+@media (min-width: 960px) {
+  .app-layout.v-container {
+    max-width: 900px;
+  }
+}
+@media (min-width: 1280px) {
+  .app-layout.v-container {
+    max-width: 1200px;
+  }
+}
+@media (min-width: 1920px) {
+  .app-layout.v-container {
+    max-width: 1800px;
+  }
+}
+@media (min-width: 2560px) {
+  .app-layout.v-container {
+    max-width: 2400px;
+  }
 }
 </style>
