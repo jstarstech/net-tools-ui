@@ -564,8 +564,10 @@ type DnsRecordsState = Omit<TabState, 'data'> & {
 }
 
 type SpamDblookup = {
-  listed: string
+  blacklist: string
+  listed: boolean
   address: string
+  txt: string[]
   blacklistInfo: {
     url: string
     name: string
@@ -658,7 +660,7 @@ type SpamDbLookupPayload = {
     hostnames: string[]
     addresses: string[]
     ip: string
-    results: any
+    results: SpamDblookup[]
   }
 }
 
