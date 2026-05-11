@@ -33,7 +33,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
           class="text-blue-grey-darken-1 your-ip"
           @click="service.address_lookup.input = remoteAddress"
         >
-          Your IP: {{ remoteAddress }} <v-icon icon="mdi:mdi-arrow-up" />
+          Your IP: {{ remoteAddress }} <v-icon icon="mdi-arrow-up" />
         </span>
       </v-col>
     </v-row>
@@ -325,8 +325,8 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
                     <td>{{ x.name }}</td>
                     <td>{{ x.RRType }}</td>
                     <td>
-                      <div><v-icon icon="mdi:mdi-menu-right" /> exchange: {{ x.exchange }}</div>
-                      <div><v-icon icon="mdi:mdi-menu-right" /> priority: {{ x.priority }}</div>
+                      <div><v-icon icon="mdi-menu-right" /> exchange: {{ x.exchange }}</div>
+                      <div><v-icon icon="mdi-menu-right" /> priority: {{ x.priority }}</div>
                     </td>
                     <td>{{ x.ttl }}s</td>
                   </tr>
@@ -335,21 +335,21 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
                     <td>{{ x.name }}</td>
                     <td>SOA</td>
                     <td>
-                      <div><v-icon icon="mdi:mdi-menu-right" /> exchange: {{ x.primary }}</div>
+                      <div><v-icon icon="mdi-menu-right" /> exchange: {{ x.primary }}</div>
                       <v-divider />
-                      <div><v-icon icon="mdi:mdi-menu-right" /> primary: {{ x.primary }}</div>
+                      <div><v-icon icon="mdi-menu-right" /> primary: {{ x.primary }}</div>
                       <v-divider />
-                      <div><v-icon icon="mdi:mdi-menu-right" /> serial: {{ x.serial }}</div>
+                      <div><v-icon icon="mdi-menu-right" /> serial: {{ x.serial }}</div>
                       <v-divider />
-                      <div><v-icon icon="mdi:mdi-menu-right" /> admin: {{ x.admin }}</div>
+                      <div><v-icon icon="mdi-menu-right" /> admin: {{ x.admin }}</div>
                       <v-divider />
-                      <div><v-icon icon="mdi:mdi-menu-right" /> refresh: {{ x.refresh }}</div>
+                      <div><v-icon icon="mdi-menu-right" /> refresh: {{ x.refresh }}</div>
                       <v-divider />
-                      <div><v-icon icon="mdi:mdi-menu-right" /> retry: {{ x.retry }}</div>
+                      <div><v-icon icon="mdi-menu-right" /> retry: {{ x.retry }}</div>
                       <v-divider />
-                      <div><v-icon icon="mdi:mdi-menu-right" /> expiration: {{ x.expiration }}</div>
+                      <div><v-icon icon="mdi-menu-right" /> expiration: {{ x.expiration }}</div>
                       <v-divider />
-                      <div><v-icon icon="mdi:mdi-menu-right" /> minimum: {{ x.minimum }}</div>
+                      <div><v-icon icon="mdi-menu-right" /> minimum: {{ x.minimum }}</div>
                     </td>
                     <td>{{ x.ttl }}s</td>
                   </tr>
