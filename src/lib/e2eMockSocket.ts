@@ -1,4 +1,5 @@
-type SocketHandler = (...args: unknown[]) => void
+type SocketHandler = (message: unknown) => void
+type SocketListener = (...args: never[]) => void
 
 type UserInputData = {
   address_lookup: string
@@ -12,7 +13,7 @@ type UserInputData = {
 
 type MockSocket = {
   sendBuffer: unknown[]
-  on(event: string, handler: SocketHandler): MockSocket
+  on(event: string, handler: SocketListener): MockSocket
   connect(): MockSocket
   emit(event: string, message?: unknown): MockSocket
 }
@@ -161,9 +162,9 @@ export function createE2EMockSocket(): MockSocket {
 
   return {
     sendBuffer: [],
-    on(event: string, handler: SocketHandler) {
+    on(event: string, handler: SocketListener) {
       const callbacks = handlers.get(event) ?? []
-      callbacks.push(handler)
+      callbacks.push(handler as SocketHandler)
       handlers.set(event, callbacks)
 
       return this
