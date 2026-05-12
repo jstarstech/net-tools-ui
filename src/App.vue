@@ -237,7 +237,8 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
                     <span
                       v-for="address in service.address_lookup.data.addresses"
                       :key="address"
-                      class="ipaddr"
+                      class="ipaddr ipaddr-clickable"
+                      @click="confirmAddressLookupInput(address)"
                     >
                       {{ address }};
                     </span>
@@ -953,6 +954,18 @@ export default {
         this.service['spamdblookup'].data.results = msg.data.results
       }
     },
+    confirmAddressLookupInput(address: string) {
+      const confirmed = window.confirm(
+        `Do you want to use ${address} in the main input field?`
+      )
+
+      if (!confirmed) {
+        return
+      }
+
+      this.service.address_lookup.input = address
+      this.submitFromInput()
+    },
     resetServiceData(state: string = 'initial') {
       this.state = state
 
@@ -1024,6 +1037,12 @@ export default {
   color: #576e7b;
   font-weight: 500;
   letter-spacing: 1px;
+}
+.ipaddr-clickable {
+  cursor: pointer;
+}
+.ipaddr-clickable:hover {
+  text-decoration: underline;
 }
 .app-title {
   font-family: Roboto, sans-serif;
