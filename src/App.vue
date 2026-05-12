@@ -284,14 +284,22 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
                   <tr v-if="x.RRType === 'AAAA'">
                     <td>{{ x.name }}</td>
                     <td>{{ x.RRType }}</td>
-                    <td>{{ x.address }}</td>
+                    <td>
+                      <span class="ipaddr ipaddr-clickable" @click="confirmAddressLookupInput(x.address)">
+                        {{ x.address }}
+                      </span>
+                    </td>
                     <td>{{ x.ttl }}s</td>
                   </tr>
 
                   <tr v-if="x.RRType === 'A'">
                     <td>{{ x.name }}</td>
                     <td>{{ x.RRType }}</td>
-                    <td>{{ x.address }}</td>
+                    <td>
+                      <span class="ipaddr ipaddr-clickable" @click="confirmAddressLookupInput(x.address)">
+                        {{ x.address }}
+                      </span>
+                    </td>
                     <td>{{ x.ttl }}s</td>
                   </tr>
 
@@ -305,7 +313,11 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
                   <tr v-if="x.RRType === 'PTR'">
                     <td>{{ x.name }}</td>
                     <td>{{ x.RRType }}</td>
-                    <td>{{ x.address }}</td>
+                    <td>
+                      <span class="ipaddr ipaddr-clickable" @click="confirmAddressLookupInput(x.address)">
+                        {{ x.address }}
+                      </span>
+                    </td>
                     <td>{{ x.ttl }}s</td>
                   </tr>
 
@@ -319,7 +331,11 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
                   <tr v-if="x.RRType === 'NS'">
                     <td>{{ x.name }}</td>
                     <td>{{ x.RRType }}</td>
-                    <td>{{ x.address }}</td>
+                    <td>
+                      <span class="ipaddr ipaddr-clickable" @click="confirmAddressLookupInput(x.address)">
+                        {{ x.address }}
+                      </span>
+                    </td>
                     <td>{{ x.ttl }}s</td>
                   </tr>
 
@@ -367,7 +383,10 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
             <template v-if="service.traceroute.data.ip">
               <p>
                 Tracing route to
-                <span class="ipaddr">
+                <span
+                  class="ipaddr ipaddr-clickable"
+                  @click="confirmAddressLookupInput(service.traceroute.data.ip)"
+                >
                   {{ service.traceroute.data.hostname }} [{{ service.traceroute.data.ip }}]
                 </span>
                 ...
@@ -392,7 +411,14 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
                     {{ hop.rtt1 }}
                   </td>
                   <td style="width: 25%">
-                    {{ hop.ip }}
+                    <template v-if="hop.ip !== '*'">
+                      <span class="ipaddr ipaddr-clickable" @click="confirmAddressLookupInput(hop.ip)">
+                        {{ hop.ip }}
+                      </span>
+                    </template>
+                    <template v-else>
+                      {{ hop.ip }}
+                    </template>
                   </td>
                   <td style="width: 50%">&nbsp;</td>
                 </tr>
@@ -954,7 +980,11 @@ export default {
         this.service['spamdblookup'].data.results = msg.data.results
       }
     },
-    confirmAddressLookupInput(address: string) {
+    confirmAddressLookupInput(address?: string) {
+      if (!address) {
+        return
+      }
+
       const confirmed = window.confirm(
         `Do you want to use ${address} in the main input field?`
       )
