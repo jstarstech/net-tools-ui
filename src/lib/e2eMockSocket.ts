@@ -1,4 +1,4 @@
-type SocketHandler = (...args: any[]) => void
+type SocketHandler = (...args: unknown[]) => void
 
 type UserInputData = {
   address_lookup: string
@@ -54,7 +54,7 @@ function createTracerouteHop() {
 function emitMockResponse(
   handlers: Map<string, SocketHandler[]>,
   event: string,
-  message: any
+  message: unknown
 ) {
   const callbacks = handlers.get(event)
 
