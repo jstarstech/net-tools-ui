@@ -239,6 +239,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
                       :key="address"
                       class="ipaddr ipaddr-clickable"
                       @click="confirmAddressLookupInput(address)"
+                      data-testid="address-lookup-ip"
                     >
                       {{ address }};
                     </span>
@@ -285,7 +286,11 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
                     <td>{{ x.name }}</td>
                     <td>{{ x.RRType }}</td>
                     <td>
-                      <span class="ipaddr ipaddr-clickable" @click="confirmAddressLookupInput(x.address)">
+                      <span
+                        class="ipaddr ipaddr-clickable"
+                        @click="confirmAddressLookupInput(x.address)"
+                        data-testid="dns-record-ip"
+                      >
                         {{ x.address }}
                       </span>
                     </td>
@@ -296,7 +301,11 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
                     <td>{{ x.name }}</td>
                     <td>{{ x.RRType }}</td>
                     <td>
-                      <span class="ipaddr ipaddr-clickable" @click="confirmAddressLookupInput(x.address)">
+                      <span
+                        class="ipaddr ipaddr-clickable"
+                        @click="confirmAddressLookupInput(x.address)"
+                        data-testid="dns-record-ip"
+                      >
                         {{ x.address }}
                       </span>
                     </td>
@@ -314,7 +323,11 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
                     <td>{{ x.name }}</td>
                     <td>{{ x.RRType }}</td>
                     <td>
-                      <span class="ipaddr ipaddr-clickable" @click="confirmAddressLookupInput(x.address)">
+                      <span
+                        class="ipaddr ipaddr-clickable"
+                        @click="confirmAddressLookupInput(x.address)"
+                        data-testid="dns-record-ip"
+                      >
                         {{ x.address }}
                       </span>
                     </td>
@@ -332,7 +345,11 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
                     <td>{{ x.name }}</td>
                     <td>{{ x.RRType }}</td>
                     <td>
-                      <span class="ipaddr ipaddr-clickable" @click="confirmAddressLookupInput(x.address)">
+                      <span
+                        class="ipaddr ipaddr-clickable"
+                        @click="confirmAddressLookupInput(x.address)"
+                        data-testid="dns-record-ip"
+                      >
                         {{ x.address }}
                       </span>
                     </td>
@@ -386,6 +403,7 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
                 <span
                   class="ipaddr ipaddr-clickable"
                   @click="confirmAddressLookupInput(service.traceroute.data.ip)"
+                  data-testid="traceroute-target-ip"
                 >
                   {{ service.traceroute.data.hostname }} [{{ service.traceroute.data.ip }}]
                 </span>
@@ -412,7 +430,11 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
                   </td>
                   <td style="width: 25%">
                     <template v-if="hop.ip !== '*'">
-                      <span class="ipaddr ipaddr-clickable" @click="confirmAddressLookupInput(hop.ip)">
+                      <span
+                        class="ipaddr ipaddr-clickable"
+                        @click="confirmAddressLookupInput(hop.ip)"
+                        data-testid="traceroute-hop-ip"
+                      >
                         {{ hop.ip }}
                       </span>
                     </template>
@@ -525,10 +547,9 @@ import ConnectionInfo from './components/ConnectionInfo.vue'
 </template>
 
 <script lang="ts">
-import { io, Socket } from 'socket.io-client'
+import { socket, setSocketToken } from '@/lib/socket'
 
 const API_URL = import.meta.env.VITE_DEV_PROXY === 'false' ? import.meta.env.VITE_API_URL : ''
-const WS_URL = import.meta.env.VITE_DEV_PROXY === 'false' ? import.meta.env.VITE_WS_URL : ''
 
 type TabState = {
   active: boolean
@@ -654,6 +675,7 @@ type NetworkWhoisPayload = {
     ip?: string
   }
 }
+
 type DomainWhoisPayload = {
   state: 'complete' | 'working'
   data: {
@@ -664,6 +686,7 @@ type DomainWhoisPayload = {
     ip?: string
   }
 }
+
 type TraceroutePayload = {
   state: 'complete' | 'working'
   data?: {
@@ -713,18 +736,6 @@ type DnsRecordsPayload = {
   }
 }
 
-export interface ServerToClientEvents {
-  address_lookup: (message: AddressLookupPayload) => void
-  domain_whois: (message: DomainWhoisPayload) => void
-  network_whois: (message: NetworkWhoisPayload) => void
-  traceroute: (message: TraceroutePayload) => void
-  traceroute_hop: (message: TracerouteHopPayload) => void
-  spamdblookup: (message: SpamDbLookupPayload) => void
-  service_scan: (message: ServiceScanPayload) => void
-  dns_records: (message: DnsRecordsPayload) => void
-  complete: (message: CompletePayload) => void
-}
-
 type UserInputData = {
   address_lookup: string
   domain_whois: boolean
@@ -758,14 +769,6 @@ type Data = {
     spamdblookup: SpamDblookupState
   }
 }
-
-let token = ''
-const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(WS_URL, {
-  autoConnect: false,
-  auth: (callback) => {
-    callback({ token })
-  }
-})
 
 export default {
   data(): Data {
@@ -854,7 +857,7 @@ export default {
     fetch(API_URL + '/init')
       .then((response) => response.json())
       .then((data) => {
-        token = data.token
+        setSocketToken(data.token)
         this.year = data.year
         this.remoteAddress = data.remoteAddress
 
@@ -994,7 +997,7 @@ export default {
       }
 
       this.service.address_lookup.input = address
-      this.submitFromInput()
+      this.submitLookup()
     },
     resetServiceData(state: string = 'initial') {
       this.state = state
@@ -1036,9 +1039,16 @@ export default {
         return
       }
 
-      this.getData()
+      this.submitLookup()
     },
     getData() {
+      if (!this.canSubmit) {
+        return
+      }
+
+      this.submitLookup()
+    },
+    submitLookup() {
       this.resetServiceData('working')
 
       const message = {
