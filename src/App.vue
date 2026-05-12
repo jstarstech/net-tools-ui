@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import './assets/main.css'
+import logoUrl from './assets/logo.svg'
 import ConnectionInfo from './components/ConnectionInfo.vue'
 </script>
 
 <template id="app">
   <v-container class="app-layout">
-    <h1 class="app-title text-grey-darken-4">NetTools</h1>
+    <img class="app-logo" :src="logoUrl" alt="NetTools" />
 
     <v-row>
       <v-col sm="10" md="8" lg="6" class="d-flex align-center pb-0">
@@ -1084,13 +1085,11 @@ export default {
 .ipaddr-clickable:hover {
   text-decoration: underline;
 }
-.app-title {
-  font-family: Roboto, sans-serif;
-  font-size: 3.75rem;
-  font-weight: 300;
-  letter-spacing: -0.0083333333em;
-  line-height: 1;
-  text-transform: none;
+.app-logo {
+  display: block;
+  width: min(360px, 100%);
+  height: auto;
+  margin-bottom: 8px;
 }
 .app-section-title {
   font-family: Roboto, sans-serif;
